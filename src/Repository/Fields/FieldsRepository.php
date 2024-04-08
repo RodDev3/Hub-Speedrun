@@ -21,6 +21,15 @@ class FieldsRepository extends ServiceEntityRepository
         parent::__construct($registry, Fields::class);
     }
 
+    public function getFieldsFromCategories(int $id): array
+    {
+        //TODO AJOUTER ORDER SUR LES FIELDS ET DANS LA BASE
+        return $this->createQueryBuilder('f')
+            ->where('f.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+    }
     //    /**
     //     * @return Fields[] Returns an array of Fields objects
     //     */

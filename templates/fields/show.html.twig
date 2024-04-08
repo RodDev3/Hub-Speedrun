@@ -1,0 +1,34 @@
+{% extends '../base.html.twig' %}
+
+{% block title %}Fields{% endblock %}
+
+{% block body %}
+    <h1>Fields</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ field.id }}</td>
+            </tr>
+            <tr>
+                <th>Display</th>
+                <td>{{ field.display ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>QuickFilter</th>
+                <td>{{ field.quickFilter ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Config</th>
+                <td>{{ field.config ? field.config|json_encode : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_fields_fields_index') }}">back to list</a>
+
+    <a href="{{ path('app_fields_fields_edit', {'id': field.id}) }}">edit</a>
+
+    {{ include('fields/fields/_delete_form.html.twig') }}
+{% endblock %}

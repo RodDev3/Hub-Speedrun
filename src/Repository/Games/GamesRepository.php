@@ -21,6 +21,17 @@ class GamesRepository extends ServiceEntityRepository
         parent::__construct($registry, Games::class);
     }
 
+    /*public function getGameFromRewrite(string $rewrite)
+    {
+        return $this->createQueryBuilder('g')
+            ->where('g.rewrite = :rewrite')
+            ->setParameter('rewrite', $rewrite)
+            ->getQuery()
+            ->getResult()
+            ;
+    }*/
+
+
     //    /**
     //     * @return Games[] Returns an array of Games objects
     //     */

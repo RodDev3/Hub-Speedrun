@@ -36,6 +36,9 @@ class Fields
     #[ORM\OneToMany(targetEntity: FieldData::class, mappedBy: 'refFields')]
     private Collection $refFieldData;
 
+    #[ORM\Column]
+    private ?int $rankOrder = null;
+
     public function __construct()
     {
         $this->refFieldData = new ArrayCollection();
@@ -132,6 +135,18 @@ class Fields
                 $refFieldData->setRefFields(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRankOrder(): ?int
+    {
+        return $this->rankOrder;
+    }
+
+    public function setRankOrder(int $rankOrder): static
+    {
+        $this->rankOrder = $rankOrder;
 
         return $this;
     }

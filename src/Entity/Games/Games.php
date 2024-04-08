@@ -122,7 +122,7 @@ class Games
     /**
      * @return Collection<int, Supports>
      */
-    public function getSupports(): Collection
+    public function getRefSupports(): Collection
     {
         return $this->refSupports;
     }

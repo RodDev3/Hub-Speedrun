@@ -42,7 +42,7 @@ class Categories
 
     public function __construct()
     {
-        $this->refCategories = new ArrayCollection();
+        /*$this->refCategories = new ArrayCollection();*/
         $this->refFields = new ArrayCollection();
         $this->refRuns = new ArrayCollection();
     }

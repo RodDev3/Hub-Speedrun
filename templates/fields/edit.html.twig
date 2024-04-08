@@ -1,0 +1,13 @@
+{% extends '../base.html.twig' %}
+
+{% block title %}Edit Fields{% endblock %}
+
+{% block body %}
+    <h1>Edit Fields</h1>
+
+    {{ include('fields/fields/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_fields_fields_index') }}">back to list</a>
+
+    {{ include('fields/fields/_delete_form.html.twig') }}
+{% endblock %}

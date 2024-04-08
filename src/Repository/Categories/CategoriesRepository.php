@@ -21,6 +21,16 @@ class CategoriesRepository extends ServiceEntityRepository
         parent::__construct($registry, Categories::class);
     }
 
+    public function getCategoriesFromRewrite(string $rewrite)
+    {
+        return $this->createQueryBuilder('c')
+            ->join('c.refGames', 'g')
+            ->where('g.rewrite = :val')
+            ->setParameter('val', $rewrite)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Categories[] Returns an array of Categories objects
     //     */

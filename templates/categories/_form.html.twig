@@ -1,0 +1,20 @@
+{{ form_start(form) }}
+    <div class="form-floating mb-3">
+        {{ form_widget(form.name) }}
+        {{ form_label(form.name) }}
+    </div>
+    <div class="form-floating mb-3">
+        {{ form_widget(form.rules) }}
+        {{ form_label(form.rules) }}
+    </div>
+    <div class="form-floating mb-3">
+        {{ form_widget(form.players) }}
+        {{ form_label(form.players) }}
+    </div>
+    <div class="form-floating mb-3">
+        {{ form_widget(form.refCategories) }}
+        {{ form_label(form.refCategories) }}
+    </div>
+    {#{{ form_widget(form) }}#}
+    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form, {render_rest: false}) }}

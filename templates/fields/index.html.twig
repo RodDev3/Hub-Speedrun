@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fields index{% endblock %}
+
+{% block body %}
+    <h1>{{ categories.name }}'s Fields</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Display</th>
+                <th>QuickFilter</th>
+                <th>Config</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for field in fields %}
+            <tr>
+                <td>{{ field.id }}</td>
+                <td>{{ field.display ? 'Yes' : 'No' }}</td>
+                <td>{{ field.quickFilter ? 'Yes' : 'No' }}</td>
+                <td>{{ field.config ? field.config|json_encode : '' }}</td>
+                <td>
+                    <a href="{{ path('app_fields_show', {'id': field.id, 'idCategories': categories.id}) }}">show</a>
+                    <a href="{{ path('app_fields_edit', {'id': field.id, 'idCategories': categories.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_fields_new', {'idCategories': categories.id}) }}">Create new</a>
+{% endblock %}
