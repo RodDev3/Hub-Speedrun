@@ -38,6 +38,20 @@ class UsersRepository extends ServiceEntityRepository implements PasswordUpgrade
         $this->getEntityManager()->flush();
     }
 
+    public function getPlayersFromResearch(string $research): array
+    {
+        $query = $this->createQueryBuilder('u');
+
+        //TODO faire en sort que si l'on revienne en arriere cela ne donne pas tous les joueurs
+        //TODO Etat du compte (Actif, Supprimé, Banni ?)
+        return $query
+            ->where($query->expr()->like('u.username', ':val'))
+            ->setParameter('val', '%'.$research.'%')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     //    /**
     //     * @return Users[] Returns an array of Users objects
     //     */

@@ -21,6 +21,20 @@ class GamesRepository extends ServiceEntityRepository
         parent::__construct($registry, Games::class);
     }
 
+    public function getGamesFromResearch(string $research): array
+    {
+        $query = $this->createQueryBuilder('g');
+
+        //TODO faire en sort que si l'on revienne en arriere cela ne donne pas tous les jeux
+        return $query
+            ->where($query->expr()->like('g.name', ':val'))
+            ->setParameter('val', '%'.$research.'%')
+            ->andWhere('g.active = 1')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
     /*public function getGameFromRewrite(string $rewrite)
     {
         return $this->createQueryBuilder('g')

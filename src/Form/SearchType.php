@@ -6,6 +6,7 @@ use App\Entity\Games\Games;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,14 +21,12 @@ class SearchType extends AbstractType
                 'choice_label' => 'name',
                 'autocomplete' => true,
             ])*/
-            ->add('search', SearchType::class, [])
+            ->add('search', TextType::class, [])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            // Configure your form options here
-        ]);
+        $resolver->setDefaults([]);
     }
 }

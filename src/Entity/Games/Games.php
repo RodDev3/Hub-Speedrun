@@ -47,6 +47,9 @@ class Games
     #[ORM\OneToMany(targetEntity: Categories::class, mappedBy: 'refGames')]
     private Collection $refCategories;
 
+    #[ORM\Column]
+    private ?bool $active = null;
+
     public function __construct()
     {
         $this->refSupports = new ArrayCollection();
@@ -214,6 +217,18 @@ class Games
                 $refCategory->setRefGames(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): static
+    {
+        $this->active = $active;
 
         return $this;
     }
