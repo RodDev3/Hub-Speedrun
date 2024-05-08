@@ -3,12 +3,13 @@
 {% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
-<div class="searchBar-Wrapper" {{ stimulus_controller('search') }}>
-    {{form_start(searchBar , {'attr' : {'id' : 'formSearch'}}) }}
+    <div class="searchBar-Wrapper" {{ stimulus_controller('search') }}>
+        {{ form_start(searchBar , {'attr' : {'id' : 'formSearch'}}) }}
 
-    {{ form_label(searchBar.search) }}
-    {{ form_widget(searchBar.search) }}
+        {{ form_label(searchBar.search) }}
+        {{ form_widget(searchBar.search) }}
 
-    {{ form_end(searchBar) }}
-</div>
+        {{ form_end(searchBar) }}
+    </div>
+    <div id="searchResults"></div>
 {% endblock %}

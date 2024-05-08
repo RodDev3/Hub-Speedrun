@@ -17,10 +17,14 @@ class FieldTypes
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private ?string $displayName = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $backName = null;
 
     #[ORM\OneToMany(targetEntity: Fields::class, mappedBy: 'refFieldTypes')]
     private Collection $refFields;
+
 
     public function __construct()
     {
@@ -32,14 +36,14 @@ class FieldTypes
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getBackName(): ?string
     {
-        return $this->name;
+        return $this->backName;
     }
 
-    public function setName(string $name): static
+    public function setBackName(string $name): static
     {
-        $this->name = $name;
+        $this->backName = $name;
 
         return $this;
     }
@@ -70,6 +74,18 @@ class FieldTypes
                 $refField->setRefFieldTypes(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDisplayName(): ?string
+    {
+        return $this->displayName;
+    }
+
+    public function setDisplayName(string $displayName): static
+    {
+        $this->displayName = $displayName;
 
         return $this;
     }

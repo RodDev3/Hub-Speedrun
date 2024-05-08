@@ -10,6 +10,7 @@ use App\Repository\Runs\RunsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: RunsRepository::class)]
 class Runs
@@ -18,9 +19,6 @@ class Runs
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column]
-    private ?int $uniqueId = null;
 
     #[ORM\ManyToOne(inversedBy: 'refRuns')]
     private ?Categories $refCategories = null;
@@ -34,6 +32,9 @@ class Runs
     #[ORM\OneToMany(targetEntity: FieldData::class, mappedBy: 'refRuns')]
     private Collection $refFieldData;
 
+    #[ORM\Column(type: 'uuid')]
+    private ?Uuid $uuid = null;
+
     public function __construct()
     {
         $this->refUsers = new ArrayCollection();
@@ -43,18 +44,6 @@ class Runs
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUniqueId(): ?int
-    {
-        return $this->uniqueId;
-    }
-
-    public function setUniqueId(int $uniqueId): static
-    {
-        $this->uniqueId = $uniqueId;
-
-        return $this;
     }
 
     public function getRefCategories(): ?Categories
@@ -131,6 +120,18 @@ class Runs
                 $refFieldData->setRefRuns(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUuid(): ?Uuid
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(Uuid $uuid): static
+    {
+        $this->uuid = $uuid;
 
         return $this;
     }

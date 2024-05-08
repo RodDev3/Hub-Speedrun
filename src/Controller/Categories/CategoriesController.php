@@ -3,8 +3,10 @@
 namespace App\Controller\Categories;
 
 use App\Entity\Categories\Categories;
+use App\Entity\Games\Games;
 use App\Form\Categories\CategoriesType;
 use App\Service\Categories\CategoriesService;
+use App\Service\Fields\FieldsService;
 use App\Service\Games\GamesService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +20,8 @@ class CategoriesController extends AbstractController
 
     public function __construct(
         private CategoriesService $categoriesService,
-        private GamesService $gamesService
+        private GamesService      $gamesService,
+        private FieldsService     $fieldsService,
     ) {}
 
     #[Route('/', name: 'app_categories_index', methods: ['GET'])]
@@ -35,20 +38,21 @@ class CategoriesController extends AbstractController
     {
         $category = new Categories();
         $category->setRefGames($this->gamesService->getGameFromRewrite($rewrite));
-        $form = $this->createForm(CategoriesType::class, $category);
+
+        $form = $this->createForm(CategoriesType::class, $category, ['game' => $this->gamesService->getGameFromRewrite($rewrite)]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($category);
-            $entityManager->flush();
 
-            return $this->redirectToRoute('app_categories_index', ['rewrite' => $rewrite ], Response::HTTP_SEE_OTHER);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->categoriesService->categoriesValidation($request,$category);
         }
+
 
         return $this->render('categories/new.html.twig', [
             'category' => $category,
             'form' => $form,
-            'game' => $this->gamesService->getGameFromRewrite($rewrite)
+            'game' => $this->gamesService->getGameFromRewrite($rewrite),
+            'fieldTypes' => $this->fieldsService->getAllFieldsTypes(),
         ]);
     }
 
@@ -83,7 +87,7 @@ class CategoriesController extends AbstractController
     #[Route('/{id}', name: 'app_categories_delete', methods: ['POST'])]
     public function delete(string $rewrite, Request $request, Categories $category, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($category);
             $entityManager->flush();
         }

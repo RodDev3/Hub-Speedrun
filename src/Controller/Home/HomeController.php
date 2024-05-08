@@ -6,6 +6,7 @@ use App\Form\Categories\CategoriesType;
 use App\Form\SearchType;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,12 +30,12 @@ class HomeController extends AbstractController
     }
 
     #[Route('/research/call', name: 'app_research_call')]
-    public function researchCall(Request $request): Response
+    public function researchCall(Request $request): JsonResponse
     {
         //Récup value depuis request
         $searchValue = $request->get("search")['search'];
 
-        $this->searchService->getResultFromSearch($searchValue);
+        return $this->searchService->getResultFromSearch($searchValue);
 
         /*return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',

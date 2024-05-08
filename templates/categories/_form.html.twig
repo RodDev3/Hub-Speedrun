@@ -1,4 +1,8 @@
-{{ form_start(form) }}
+<div>
+    {{ form_start(form, {'attr' :{ 'id' : 'formCategories', 'data-controller': 'categoriesValidation' } } ) }}
+
+    {{ form_row(form._token) }}
+    {{ form_widget(form.refGames) }}
     <div class="form-floating mb-3">
         {{ form_widget(form.name) }}
         {{ form_label(form.name) }}
@@ -11,10 +15,27 @@
         {{ form_widget(form.players) }}
         {{ form_label(form.players) }}
     </div>
-    <div class="form-floating mb-3">
+
+    <hr>
+
+    <h2>Submit Form configuration</h2>
+
+    <div id="newFields1"></div>
+
+    <div class="input-group">
+        <select class="form-select addFields" id="addFields1" aria-label="">
+            <option selected>Choose...</option>
+            {% for fieldType in fieldTypes %}
+                <option value="{{ fieldType.backName }}">{{ fieldType.displayName }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-outline-secondary addFieldsButton" data-fields="1" type="button">Button</button>
+    </div>
+    {# <div class="form-floating mb-3">
         {{ form_widget(form.refCategories) }}
         {{ form_label(form.refCategories) }}
-    </div>
-    {#{{ form_widget(form) }}#}
+    </div> #}
+    {# {{ form_widget(form) }} #}
     <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form, {render_rest: false}) }}
+    {{ form_end(form, {render_rest: false}) }}
+</div>

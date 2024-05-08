@@ -1,0 +1,26 @@
+{% extends '../base.html.twig' %}
+
+{% block title %}Runs{% endblock %}
+
+{% block body %}
+    <h1>Runs</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ run.id }}</td>
+            </tr>
+            <tr>
+                <th>Uuid</th>
+                <td>{{ run.uuid }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_runs_runs_index') }}">back to list</a>
+
+    <a href="{{ path('app_runs_runs_edit', {'id': run.id}) }}">edit</a>
+
+    {{ include('runs/runs/_delete_form.html.twig') }}
+{% endblock %}

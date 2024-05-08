@@ -25,6 +25,7 @@
                 <td>
                     <a href="{{ path('app_categories_show', {'id': category.id, 'rewrite' : game.rewrite}) }}">show</a>
                     <a href="{{ path('app_categories_edit', {'id': category.id, 'rewrite' : game.rewrite}) }}">edit</a>
+                    <a href="{{ path('app_runs_submit', {'rewrite' : game.rewrite }) }}">Submit run</a>
                 </td>
             </tr>
         {% else %}

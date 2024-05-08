@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Runs{% endblock %}
+
+{% block body %}
+    <h1>Create new Runs</h1>
+
+    {{ include('runs/_form.html.twig') }}
+
+    {#<a href="{{ path('app_runs_index') }}">back to list</a>#}
+{% endblock %}

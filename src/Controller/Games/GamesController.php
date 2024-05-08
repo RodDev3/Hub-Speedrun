@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[Route('/games')]
 class GamesController extends AbstractController
@@ -31,6 +32,7 @@ class GamesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $game->setUuid(Uuid::v4());
             $entityManager->persist($game);
             $entityManager->flush();
 
@@ -43,7 +45,7 @@ class GamesController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_games_show', methods: ['GET'])]
+    #[Route('/{rewrite}', name: 'app_games_show', methods: ['GET'])]
     public function show(Games $game): Response
     {
         return $this->render('games/show.html.twig', [
@@ -58,6 +60,7 @@ class GamesController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_games_index', [], Response::HTTP_SEE_OTHER);

@@ -85,6 +85,13 @@ class Fields
         return $this;
     }
 
+    public function addToConfig(array $array): static
+    {
+        $configOld = $this->getConfig();
+        $configNew = array_merge($configOld, $array) ;
+        return $this->setConfig($configNew);
+    }
+
     public function getRefCategories(): ?Categories
     {
         return $this->refCategories;

@@ -26,14 +26,44 @@ export default class extends Controller {
             try{
 
                 //Ajax call
-                const response = fetch('/research/call', {
+                const response = await fetch('/research/call', {
                     method: 'POST',
                     body: formData
-                })
+                });
 
-                const data = await response.json();
+                if (response.ok === true){
+                    const data = await response.json();
+                    /*console.log(data)
+                    console.log(data['games'][0].name)*/
 
-                console.log(data)
+                    let resultsDiv = document.querySelector('#searchResults');
+
+                    resultsDiv.innerHTML = "";
+
+                    if (data.games.length > 0) {
+                        resultsDiv.innerHTML += "<p>Games</p>";
+                    }
+                    for (const result in data.games){
+                        resultsDiv.innerHTML += "<a href='/games/"+data.games[result].rewrite +"'>" +
+                            "<p>"+ data.games[result].name +"</p>" +
+                            "<p>"+ data.games[result].image +"</p>" +
+                            "<p>"+ data.games[result].rewrite +"</p>" +
+                            "<p>"+ data.games[result].releaseDate +"</p>" +
+                            "</a>"
+                    }
+
+                    if (data.players.length > 0) {
+                        resultsDiv.innerHTML += "<p>Players</p>";
+                    }
+                    for (const result in data.players){
+                        resultsDiv.innerHTML += "<a href=''>" +
+                            "<p>"+ data.players[result].username +"</p>" +
+                            "</a>"
+                    }
+
+                }else{
+                    console.error('Status error')
+                }
 
             }catch (error){
                 console.error('Ajax error :' + error)

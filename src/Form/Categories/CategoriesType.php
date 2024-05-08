@@ -6,6 +6,7 @@ use App\Entity\Categories\Categories;
 use App\Entity\Games\Games;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -30,14 +31,16 @@ class CategoriesType extends AbstractType
             ->add('players', IntegerType::class, [
                 'label' => 'Number of players',
             ])
-            /*->add('refGames', EntityType::class, [
-                'class' => Games::class,
-                'choice_label' => 'name',
-            ])*/
-            ->add('refCategories', EntityType::class, [
+
+            ->add('refGames', HiddenType::class, [
+                'data' => $options['game']->getUuid(),
+                'mapped' => false
+            ])
+            /*->add('refCategories', EntityType::class, [
                 'class' => Categories::class,
                 'choice_label' => 'id',
-            ])
+            ])*/
+
         ;
     }
 
@@ -45,6 +48,8 @@ class CategoriesType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Categories::class,
+            'allow_extra_fields' => true,
+            'game' => null
         ]);
     }
 }
