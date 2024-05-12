@@ -1,0 +1,23 @@
+<div {{ stimulus_controller('manageSelect', { 'uuid': uuid } ) }}>
+
+    <div class='input-group mb-3'>
+        <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][label]'
+               placeholder='Title' aria-label='Title'>
+    </div>
+    <div class='input-group mb-3'>
+        <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][option.1]'
+               placeholder='Option' aria-label=''>
+        <button class="btn btn-outline-secondary deleteButtonSelect" type="button" id="">Delete</button>
+    </div>
+    <div class='input-group mb-3'>
+        <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][option.2]'
+               placeholder='Option' aria-label=''>
+        <button class="btn btn-outline-secondary deleteButtonSelect" type="button" id="">Delete</button>
+    </div>
+
+    <div id="newOptions{{ uuid }}"></div>
+
+    <div class='input-group mb-3'>
+        <button class="btn btn-outline-secondary addButtons" type="button">Add Options</button>
+    </div>
+</div>

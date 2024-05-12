@@ -3,6 +3,7 @@
 namespace App\Form\Runs;
 
 use App\Entity\Categories\Categories;
+use App\Entity\Games\Games;
 use App\Entity\Runs\Runs;
 use App\Entity\Status\Status;
 use App\Entity\Users\Users;
@@ -19,6 +20,7 @@ class RunsType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+
         $builder
             //TODO UN EVENT DESSUS ONCHANGE QUI CHARGE LES FIELDS LIE A LA CATE (SOUS CATE ?)
                 //TODO CALL AJAX POUR RECUP LES FIELDS LIE A LA CATE
@@ -60,7 +62,7 @@ class RunsType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Runs::class,
-            'game' => null
+            'game' => null,
         ]);
     }
 }

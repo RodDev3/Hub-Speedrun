@@ -3,6 +3,7 @@
 namespace App\Controller\Categories;
 
 use App\Entity\Categories\Categories;
+use App\Entity\FieldTypes\FieldTypes;
 use App\Entity\Games\Games;
 use App\Form\Categories\CategoriesType;
 use App\Service\Categories\CategoriesService;
@@ -25,9 +26,24 @@ class CategoriesAjaxController extends AbstractController
         private CategoriesService $categoriesService,
         private GamesService      $gamesService,
         private FieldsService     $fieldsService,
+        private EntityManagerInterface $entityManager,
     ) {}
 
-    #[Route('/call/submit', name: 'app_categories_call_submit', methods: ['GET', 'POST'])]
+    #[Route('/call/addField', name: 'app_categories_call_addField', methods: ['POST'])]
+    public function callAddField(Request $request): Response
+    {
+        $data = json_decode($request->getContent(),true)['type'];
+
+        $fieldType = $this->entityManager->getRepository(FieldTypes::class)->findOneBy(['backName' => $data]);
+        if (!$fieldType instanceof FieldTypes){
+            return new JsonResponse(['message' => 'Invalid field type'], 400);
+        }
+
+        return $this->fieldsService->getNewFields($fieldType);
+
+    }
+
+    #[Route('/call/submit', name: 'app_categories_call_submit', methods: ['POST'])]
     public function callSubmit(Request $request): Response
     {
         $requestCategories = $request->request->all('categories');

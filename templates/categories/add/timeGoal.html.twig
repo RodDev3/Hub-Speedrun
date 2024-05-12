@@ -1,0 +1,35 @@
+<div>
+    <div class='input-group mb-3'>
+        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][label]'
+               placeholder='Title' aria-label='Title'>
+    </div>
+    <div class='input-group mb-3'>
+        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][hours]'
+               placeholder='' aria-label='' disabled>
+        <span class='input-group-text'>h</span>
+        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][minutes]'
+               placeholder='' aria-label='' disabled>
+        <span class='input-group-text'>m</span>
+        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][seconds]'
+               placeholder='' aria-label='' disabled>
+        <span class='input-group-text'>s</span>
+        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][millisecond]'
+               placeholder='' aria-label='' disabled>
+        <span class='input-group-text'>ms</span>
+    </div>
+    <div class='form-check form-switch'>
+        <input class='form-check-input checkboxValue' name='categories[fields][time-goal.{{ 'now'|date('U') }}][primary]'
+               type='checkbox' role='switch' id=''>
+        <label class='form-check-label' for='flexSwitchCheckDefault'>Timing value primary</label>
+    </div>
+    <div class='form-check form-switch'>
+        <input class='form-check-input' name='categories[fields][time-goal.{{ 'now'|date('U') }}][secondary]'
+               type='checkbox' role='switch' id=''>
+        <label class='form-check-label' for='flexSwitchCheckDefault'>Timing value secondary</label>
+    </div>
+    <div class='form-check form-switch'>
+        <input class='form-check-input' name='categories[fields][time-goal.{{ 'now'|date('U') }}][mandatory]'
+               type='checkbox' role='switch' id=''>
+        <label class='form-check-label' for='flexSwitchCheckDefault'>Mandatory</label>
+    </div>
+</div>

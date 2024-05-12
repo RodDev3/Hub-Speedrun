@@ -22,7 +22,7 @@
         "symfony/stimulus-bundle": "^2.16",
         "symfony/twig-bundle": "7.0.*",
         "symfony/uid": "7.0.*",
-        "symfony/ux-autocomplete": "^2.16",
+        "symfony/ux-autocomplete": "^2.17",
         "symfony/validator": "7.0.*",
         "symfony/webpack-encore-bundle": "^2.1",
         "symfony/yaml": "7.0.*",

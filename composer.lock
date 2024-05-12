@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2514021d2037151bf497ab9bcea80e62",
+    "content-hash": "374b1dfd9bc886a586408c2a51017b47",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -5071,16 +5071,16 @@
         },
         {
             "name": "symfony/ux-autocomplete",
-            "version": "v2.16.0",
+            "version": "v2.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-autocomplete.git",
-                "reference": "e50ab09c69609cb44a9d5ea987624c49ca0494da"
+                "reference": "b2c3c4302bc5b0062b3e8891460321fe694c466d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-autocomplete/zipball/e50ab09c69609cb44a9d5ea987624c49ca0494da",
-                "reference": "e50ab09c69609cb44a9d5ea987624c49ca0494da",
+                "url": "https://api.github.com/repos/symfony/ux-autocomplete/zipball/b2c3c4302bc5b0062b3e8891460321fe694c466d",
+                "reference": "b2c3c4302bc5b0062b3e8891460321fe694c466d",
                 "shasum": ""
             },
             "require": {
@@ -5113,7 +5113,7 @@
                 "symfony/uid": "^6.3|^7.0",
                 "twig/twig": "^2.14.7|^3.0.4",
                 "zenstruck/browser": "^1.1",
-                "zenstruck/foundry": "^1.33"
+                "zenstruck/foundry": "1.37.*"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -5143,7 +5143,7 @@
                 "symfony-ux"
             ],
             "support": {
-                "source": "https://github.com/symfony/ux-autocomplete/tree/v2.16.0"
+                "source": "https://github.com/symfony/ux-autocomplete/tree/v2.17.0"
             },
             "funding": [
                 {
@@ -5159,7 +5159,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-02-29T16:20:59+00:00"
+            "time": "2024-04-19T06:36:45+00:00"
         },
         {
             "name": "symfony/validator",

@@ -209,4 +209,6 @@ class Categories
 
         return $this;
     }
+
+    //TODO FAIRE UNE METHOD GET PRIMARY TIME QUI VIENT CHECK TOUT LES FIELDS
 }

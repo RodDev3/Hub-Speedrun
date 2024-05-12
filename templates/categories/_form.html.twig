@@ -20,10 +20,10 @@
 
     <h2>Submit Form configuration</h2>
 
-    <div id="newFields1"></div>
+    <div id="newFields"></div>
 
     <div class="input-group">
-        <select class="form-select addFields" id="addFields1" aria-label="">
+        <select class="form-select addFields" id="addFields" aria-label="">
             <option selected>Choose...</option>
             {% for fieldType in fieldTypes %}
                 <option value="{{ fieldType.backName }}">{{ fieldType.displayName }}</option>

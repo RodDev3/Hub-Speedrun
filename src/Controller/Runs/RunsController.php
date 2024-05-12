@@ -4,6 +4,7 @@ namespace App\Controller\Runs;
 
 use App\Entity\Games\Games;
 use App\Entity\Runs\Runs;
+use App\Form\Runs\RunsSubmitType;
 use App\Form\Runs\RunsType;
 use App\Repository\Runs\RunsRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,19 +25,12 @@ class RunsController extends AbstractController
         ]);
     }
 
-    #[Route('/submit', name: 'app_runs_submit', methods: ['GET', 'POST'])]
+    #[Route('/submit', name: 'app_runs_submit', methods: ['GET'])]
     public function submit(Games $games, Request $request, EntityManagerInterface $entityManager): Response
     {
         $run = new Runs();
         $form = $this->createForm(RunsType::class, $run, ['game' => $games]);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($run);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_runs_index', [], Response::HTTP_SEE_OTHER);
-        }
 
         return $this->render('runs/new.html.twig', [
             'run' => $run,

@@ -24,12 +24,15 @@ class CategoriesType extends AbstractType
                   'class' => 'form-control',
                 'placeholder' => 'Name'
                 ],
+                'required' => true
             ])
             ->add('rules', TextareaType::class,[
                 'label' => 'Rules',
+                'required' => true
             ])
             ->add('players', IntegerType::class, [
                 'label' => 'Number of players',
+                'required' => true
             ])
 
             ->add('refGames', HiddenType::class, [

@@ -10,6 +10,23 @@ export default class extends Controller {
         let loadFields = document.querySelector('#loadFields');
 
 
+        document.addEventListener("DOMContentLoaded", async function(e){
+            e.preventDefault();
+            let formData = new FormData(form);
+
+            let response = await fetch('/runs/fields/call',{
+                method: 'POST',
+                body: formData
+            })
+
+            let data = await response.json();
+            if (response.status === 200){
+                loadFields.insertAdjacentHTML('beforeend', data)
+            } else if (response.status === 400){
+                toastr.error(data.message,'Error')
+            }
+        });
+
         //TODO ajout d'un event au chargement du dom pour charger les fields
         category.addEventListener('change', async function (e){
 
@@ -25,43 +42,7 @@ export default class extends Controller {
 
             let data = await response.json();
             if (response.status === 200){
-
-                data.forEach((fields) => {
-                    console.log(fields)
-                        switch (fields.type){
-                            case 'time-goal':
-                                    loadFields.insertAdjacentHTML('beforeend', '<div>' +
-                                        '<div>' + fields.label + '</div>' +
-                                            '<div class="input-group mb-3">' +
-                                                '<input type="text" class="form-control" name="run[' + fields.id + '][hours]"' +
-                                                    (`mandatory` in fields ? "required='required'" : "")
-                                                    + ' maxlength="3" placeholder="" aria-label="">' +
-                                                '<span class="input-group-text">h</span>' +
-
-                                                '<input type="text" class="form-control" name="run[' + fields.id + '][minutes]"' +
-                                                    (`mandatory` in fields ? "required='required'" : "") +
-                                                    ' maxlength="2" placeholder="" aria-label="">' +
-                                                '<span class="input-group-text">m</span>' +
-
-                                                '<input type="text" class="form-control" name="run[' + fields.id + '][secondes]"' +
-                                                    (`mandatory` in fields ? "required='required'" : "") +
-                                                    ' maxlength="2" placeholder="" aria-label="">' +
-                                                '<span class="input-group-text">s</span>' +
-
-                                                '<input type="text" class="form-control" name="run[' + fields.id + '][milliseconds]"' +
-                                                    (`mandatory` in fields ? "required='required'" : "") +
-                                                    ' maxlength="3" placeholder="" aria-label="">' +
-                                                '<span class="input-group-text">ms</span>' +
-
-                                            '</div>' +
-                                        '</div>'
-                                    );
-                                break;
-                        }
-                    /*for (let field in fields){
-                        console.log(field)
-                    }*/
-                })
+                loadFields.insertAdjacentHTML('beforeend', data)
             } else if (response.status === 400){
                 toastr.error(data.message,'Error')
             }

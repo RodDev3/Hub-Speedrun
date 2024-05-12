@@ -1,0 +1,20 @@
+<div>
+    <div class='input-group mb-3'>
+        <input type='text' class='form-control' name='categories[fields][number-goal.{{ 'now'|date('U') }}][label]'
+               placeholder='Title' aria-label='Title'>
+    </div>
+    <div class='input-group mb-3'>
+        <input type='text' class='form-control' name='categories[fields][number-goal.{{ 'now'|date('U') }}][number]'
+               placeholder='' aria-label='' disabled>
+    </div>
+    <div class='form-check form-switch'>
+        <input class='form-check-input checkboxValue' name='categories[fields][number-goal.{{ 'now'|date('U') }}][primary]'
+               type='checkbox' role='switch' id=''>
+        <label class='form-check-label' for='flexSwitchCheckDefault'>Timing value primary</label>
+    </div>
+    <div class='form-check form-switch'>
+        <input class='form-check-input' name='categories[fields][number-goal.{{ 'now'|date('U') }}][secondary]'
+               type='checkbox' role='switch' id=''>
+        <label class='form-check-label' for='flexSwitchCheckDefault'>Timing value secondary</label>
+    </div>
+</div>

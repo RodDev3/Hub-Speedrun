@@ -6,6 +6,7 @@ use App\Entity\Categories\Categories;
 use App\Entity\Fields\Fields;
 use App\Entity\FieldTypes\FieldTypes;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpParser\Node\Expr\New_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +30,6 @@ class CategoriesService extends AbstractController
     {
 
         $formData = $request->request->all();
-
 
         //TODO VOIR SI JE PASSE SUR DU VALIDATOR
 
@@ -67,6 +67,8 @@ class CategoriesService extends AbstractController
             foreach ($formData['categories']['fields'] as $key => $fieldData) {
 
                 $field = new Fields();
+                $field->setRefCategories($categories);
+
                 $explodedType = explode('.', $key);
                 $fieldType = $explodedType[0];
 
@@ -124,7 +126,6 @@ class CategoriesService extends AbstractController
                         if ($isPrimary && $isSecondary) {
                             return new JsonResponse(['message' => 'Please choose between primary and secondary'], 400);
                         }
-                        $field->setRefCategories($categories);
 
                         //Vérif sur le type de champ
                         $type = $this->entityManager->getRepository(FieldTypes::class)->findOneBy(['backName' => $fieldType]);
@@ -141,13 +142,63 @@ class CategoriesService extends AbstractController
                         $this->entityManager->persist($field);
                         break;
 
+                    case 'select' :
+                        $options = [];
+
+                        $pointer = 0;
+
+                        foreach ($fieldData as $key => $data) {
+
+                            $keyExploded = explode('.', $key);
+                            $key = $keyExploded[0];
+
+                            switch ($key) {
+                                case 'option':
+                                    //Check si l'options est vide
+                                    if ($data === ''){
+                                        return new JsonResponse(['message' => "Please fill all options in the list"], 400);
+                                    }
+
+                                    $options = array_merge($options, [$pointer => trim(htmlspecialchars($data))]);
+                                    $pointer++;
+                                    break;
+                                case 'label':
+                                    if ($data === ""){
+                                        return new JsonResponse(['message' => "Please fill the name of the list"], 400);
+                                    }
+                                    $field->addToConfig(['label' => [trim(htmlspecialchars($data))]]);
+                                    break;
+                            }
+                        }
+
+                        //Au moins 2 options dans la liste
+                        if ($pointer < 2){
+                            return new JsonResponse(['message' => 'Please set at least 2 options in the list'], 400);
+                        }
+
+                        dd($pointer, $field);
+                        $field->addToConfig(['options' => $options]);
+
+                        //Verif sur le type
+                        $type = $this->entityManager->getRepository(FieldTypes::class)->findOneBy(['backName' => $fieldType]);
+                        if (!$type instanceof FieldTypes) {
+                            return new JsonResponse(['message' => 'Invalid field type'], 400);
+                        }
+                        $field->setRefFieldTypes($type);
+
+                        //TODO RETIRER CA JUSTE POUR TEST
+                        $field->setDisplay(true);
+                        $field->setQuickFilter(true);
+                        $field->setRankOrder(1);
+
+                        break;
                 }
 
 
             }
             //Un champ doit être "primary" obligatoirement
             if (!$hasPrimary) {
-                return new JsonResponse(['message' => 'Please check a default timing method'], 400);
+                return new JsonResponse(['message' => 'Please add/select a default timing method'], 400);
             }
             $this->entityManager->flush();
         }
@@ -164,14 +215,38 @@ class CategoriesService extends AbstractController
 
     public function getFieldsFromCategory(Categories $category): JsonResponse
     {
-        $fields = [];
-        foreach ($category->getRefFields() as $field) {
-            //GetType
-            $config = $field->getConfig();
+        $fields = '';
+        foreach ($category->getRefFields() as $key => $field) {
+
+            //TODO VOIR POUR LE TRI
+            switch ($field->getRefFieldTypes()->getBackName()) {
+                case 'time-goal':
+
+                    $fields .= $this->renderView('runs/includes/load/timeGoal.html.twig', [
+                        'key' => $key,
+                        'fields' => $field
+                    ]);
+
+                    break;
+                case 'select':
+                    $fields .= $this->renderView('runs/includes/load/select.html.twig', [
+                        'key' => $key,
+                        'fields' => $field
+                    ]);
+                    break;
+            }
+
+            //$this->renderView() RENVOIE DU HTML
+            //TODO RENDER TWIG POUR JUSTE AVOIR LE CHAMPS EN HTML
+            /*$config = $field->getConfig();
             $config['type'] = $field->getRefFieldTypes()->getBackName();
             $config['id'] = $field->getId();
-            $fields[] = $config;
+            $fields[] = $config;*/
         }
+
+        //Ajout du nombre de champs joueurs à charger
+        /*$fields[] = ['type' => 'players' , 'number' => $category->getPlayers()];*/
+
         return new JsonResponse($fields);
     }
 }
