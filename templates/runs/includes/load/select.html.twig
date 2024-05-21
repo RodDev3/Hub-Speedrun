@@ -1,25 +1,9 @@
 <div>
-    <div>{{ fields.config.label }}</div>
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" name="field[{{ fields.id }}][hours]"
-               {% if fields.config.mandatory is defined %}required="required"{% endif %} maxlength="3" placeholder=""
-               aria-label="">
-        <span class="input-group-text">h</span>
-
-        <input type="text" class="form-control" name="field[{{ fields.id }}][minutes]"
-               {% if fields.config.mandatory is defined %}required="required"{% endif %} maxlength="2" placeholder=""
-               aria-label="">
-        <span class="input-group-text">m</span>
-
-        <input type="text" class="form-control" name="field[{{ fields.id }}][secondes]"
-               {% if fields.config.mandatory is defined %}required="required"{% endif %} maxlength="2" placeholder=""
-               aria-label="">
-        <span class="input-group-text">s</span>
-
-        <input type="text" class="form-control" name="field[{{ fields.id }}][milliseconds]"
-               {% if fields.config.mandatory is defined %}required="required"{% endif %} maxlength="3" placeholder=""
-               aria-label="">
-        <span class="input-group-text">ms</span>
-
+    <label for="fields[{{ fields.uuid }}]">{{ fields.config.label }}</label>
+    <select name="fields[{{ fields.uuid }}]" id="" class="">
+        {% for option in fields.config.options %}
+            <option value="{{ option }}">{{ option }}</option>
+        {% endfor %}
+    </select>
     </div>
 </div>

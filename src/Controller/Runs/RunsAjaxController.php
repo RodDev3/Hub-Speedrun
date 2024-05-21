@@ -54,6 +54,7 @@ class RunsAjaxController extends AbstractController
     public function submitCall(Request $request): Response
     {
 
+
         $category = $this->entityManager->getRepository(Categories::class)->findOneBy(['uuid' => $request->request->all()['runs']['refCategories']]);
 
         $game = $this->entityManager->getRepository(Games::class)->findOneBy(['uuid' => $request->request->all()['runs']['game']]);
@@ -63,7 +64,7 @@ class RunsAjaxController extends AbstractController
         }
 
         $run = new Runs();
-        $form = $this->createForm(RunsType::class, ['game' => $game]);
+        $form = $this->createForm(RunsType::class,$run , ['game' => $game]);
         $form->handleRequest($request);
 
 

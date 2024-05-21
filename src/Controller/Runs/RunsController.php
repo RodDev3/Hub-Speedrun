@@ -29,6 +29,7 @@ class RunsController extends AbstractController
     public function submit(Games $games, Request $request, EntityManagerInterface $entityManager): Response
     {
         $run = new Runs();
+
         $form = $this->createForm(RunsType::class, $run, ['game' => $games]);
 
 

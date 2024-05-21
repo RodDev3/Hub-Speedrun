@@ -9,23 +9,22 @@ export default class extends Controller {
 
     connect() {
 
+        //Pointer
         this.pointer = 2;
 
-        this.deleteButtons = document.querySelectorAll(".deleteButtonSelect");
+        this.deleteButtons = this.element.querySelectorAll(".deleteButtonSelect");
+        this.addButton = this.element.querySelector("#addButton");
+        this.newOptions = this.element.querySelector("#newOptions");
 
-        this.addButtons = document.querySelectorAll(".addButtons");
-
-        this.newOptions = document.querySelector("#newOptions" + this.uuidValue);
 
         this.deleteButtons.forEach((button) => {
             this.delete(button);
         });
 
-        this.addButtons.forEach((button) => {
-            button.addEventListener("click", this.add.bind(this));
-        })
+        this.addButton.addEventListener("click", this.add.bind(this));
     }
 
+    //Function delete option
     delete(button){
         button.addEventListener('click', (e)=> {
             e.preventDefault();
@@ -35,6 +34,7 @@ export default class extends Controller {
         })
     }
 
+    //Function add option
     add(e){
         e.preventDefault();
 
@@ -47,8 +47,8 @@ export default class extends Controller {
         );
 
         //set les nouveaux deleteButtons et leur ajoute l'eventListener
-        let newDeleteButtons = document.querySelectorAll(".deleteButtonSelect");
-        newDeleteButtons.forEach((button) => {
+        this.deleteButtons = this.element.querySelectorAll(".deleteButtonSelect");
+        this.deleteButtons.forEach((button) => {
             this.delete(button)
         })
     }

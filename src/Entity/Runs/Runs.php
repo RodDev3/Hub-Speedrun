@@ -39,6 +39,7 @@ class Runs
     {
         $this->refUsers = new ArrayCollection();
         $this->refFieldData = new ArrayCollection();
+        $this->uuid = Uuid::v4();
     }
 
     public function getId(): ?int

@@ -54,7 +54,7 @@ class CategoriesService extends AbstractController
         $categories->setUuid(Uuid::v4());
         //Persist/flush la caté
         $this->entityManager->persist($categories);
-        $this->entityManager->flush();
+
 
 
         //Vérification s'il y a bien des champs ajoutés
@@ -166,7 +166,7 @@ class CategoriesService extends AbstractController
                                     if ($data === ""){
                                         return new JsonResponse(['message' => "Please fill the name of the list"], 400);
                                     }
-                                    $field->addToConfig(['label' => [trim(htmlspecialchars($data))]]);
+                                    $field->addToConfig(['label' => trim(htmlspecialchars($data))]);
                                     break;
                             }
                         }
@@ -176,7 +176,6 @@ class CategoriesService extends AbstractController
                             return new JsonResponse(['message' => 'Please set at least 2 options in the list'], 400);
                         }
 
-                        dd($pointer, $field);
                         $field->addToConfig(['options' => $options]);
 
                         //Verif sur le type
@@ -191,9 +190,9 @@ class CategoriesService extends AbstractController
                         $field->setQuickFilter(true);
                         $field->setRankOrder(1);
 
+                        $this->entityManager->persist($field);
                         break;
                 }
-
 
             }
             //Un champ doit être "primary" obligatoirement
@@ -216,6 +215,13 @@ class CategoriesService extends AbstractController
     public function getFieldsFromCategory(Categories $category): JsonResponse
     {
         $fields = '';
+
+        for ($pointer = 0; $pointer < $category->getPlayers(); $pointer++) {
+            $fields .= $this->renderView('runs/includes/load/user.html.twig', [
+                'pointer' => $pointer
+            ]);
+        }
+
         foreach ($category->getRefFields() as $key => $field) {
 
             //TODO VOIR POUR LE TRI

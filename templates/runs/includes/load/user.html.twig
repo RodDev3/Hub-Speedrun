@@ -1,0 +1,6 @@
+<div class="userFields">
+    {# https://symfony.com/bundles/ux-autocomplete/current/index.html#custom-autocompleter #}
+    <select name="fields[users.{{ pointer }}]" id="" {{ stimulus_controller('symfony/ux-autocomplete/autocomplete',
+        { url : path('ux.entity_autocompleter', { alias: 'users' } ) } ) }}>
+    </select>
+</div>

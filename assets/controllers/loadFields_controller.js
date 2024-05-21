@@ -10,6 +10,7 @@ export default class extends Controller {
         let loadFields = document.querySelector('#loadFields');
 
 
+        //Evenement onload
         document.addEventListener("DOMContentLoaded", async function(e){
             e.preventDefault();
             let formData = new FormData(form);
@@ -27,7 +28,7 @@ export default class extends Controller {
             }
         });
 
-        //TODO ajout d'un event au chargement du dom pour charger les fields
+        //Evenement onchange
         category.addEventListener('change', async function (e){
 
             //TODO découper la page en grande catégorie comme Players / Times / Video / Others"

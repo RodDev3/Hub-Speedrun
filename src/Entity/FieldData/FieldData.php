@@ -24,6 +24,12 @@ class FieldData
     #[ORM\ManyToOne(inversedBy: 'refFieldData')]
     private ?Fields $refFields = null;
 
+    public function __construct(Fields $fields, Runs $runs, mixed $data)
+    {
+        $this->refFields = $fields;
+        $this->refRuns = $runs;
+        $this->data = $data;
+    }
     public function getId(): ?int
     {
         return $this->id;

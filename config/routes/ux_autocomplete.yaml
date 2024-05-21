@@ -1,3 +1,7 @@
 ux_autocomplete:
     resource: '@AutocompleteBundle/config/routes.php'
     prefix: '/autocomplete'
+
+ux.entity_autocompleter:
+    controller: ux.autocomplete.entity_autocomplete_controller
+    path: '/entity/autocomplete/{alias}'
