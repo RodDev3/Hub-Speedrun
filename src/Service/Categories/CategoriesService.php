@@ -3,6 +3,7 @@
 namespace App\Service\Categories;
 
 use App\Entity\Categories\Categories;
+use App\Entity\FieldData\FieldData;
 use App\Entity\Fields\Fields;
 use App\Entity\FieldTypes\FieldTypes;
 use Doctrine\ORM\EntityManagerInterface;
@@ -54,7 +55,6 @@ class CategoriesService extends AbstractController
         $categories->setUuid(Uuid::v4());
         //Persist/flush la caté
         $this->entityManager->persist($categories);
-
 
 
         //Vérification s'il y a bien des champs ajoutés
@@ -155,7 +155,7 @@ class CategoriesService extends AbstractController
                             switch ($key) {
                                 case 'option':
                                     //Check si l'options est vide
-                                    if ($data === ''){
+                                    if ($data === '') {
                                         return new JsonResponse(['message' => "Please fill all options in the list"], 400);
                                     }
 
@@ -163,7 +163,7 @@ class CategoriesService extends AbstractController
                                     $pointer++;
                                     break;
                                 case 'label':
-                                    if ($data === ""){
+                                    if ($data === "") {
                                         return new JsonResponse(['message' => "Please fill the name of the list"], 400);
                                     }
                                     $field->addToConfig(['label' => trim(htmlspecialchars($data))]);
@@ -172,7 +172,7 @@ class CategoriesService extends AbstractController
                         }
 
                         //Au moins 2 options dans la liste
-                        if ($pointer < 2){
+                        if ($pointer < 2) {
                             return new JsonResponse(['message' => 'Please set at least 2 options in the list'], 400);
                         }
 
@@ -254,5 +254,38 @@ class CategoriesService extends AbstractController
         /*$fields[] = ['type' => 'players' , 'number' => $category->getPlayers()];*/
 
         return new JsonResponse($fields);
+    }
+
+    public function loadLeaderboard(Categories $categories): JsonResponse
+    {
+
+        $primaryComparisonField = $categories->getPrimaryComparison();
+
+        //Si aucune comparaison est en place
+        if (!$primaryComparisonField instanceof Fields) {
+            return new JsonResponse(['message' => 'Wrong category configuration'], 400);
+        }
+
+        /*$primaryComparisonData = [];*/
+
+        //Get primary comparaison
+        /*foreach ($categories->getRefRuns() as $key => $run) {
+            if ($primaryComparisonField instanceof Fields) {
+                $primaryComparisonData[] = $this->entityManager->getRepository(FieldData::class)->findOneBy(['refFields' => $primaryComparisonField->getId(), 'refRuns' => $run->getId()]);
+                break;
+            }
+        }*/
+
+
+        /*if ($primaryComparisonData === null) {
+            return new JsonResponse(['message' => 'Wrong comparison configuration'], 400);
+        }*/
+
+
+
+        return new JsonResponse($this->renderView('categories/includes/leaderboard.html.twig', [
+            'runs' => $categories->getRefRuns(),
+            'primaryComparison' => $primaryComparisonField,
+        ]));
     }
 }

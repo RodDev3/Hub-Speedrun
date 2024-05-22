@@ -41,4 +41,21 @@
     <a href="{{ path('app_categories_index', {'rewrite' : game.rewrite}) }}"> Manage Categories</a>
 
     {{ include('games/_delete_form.html.twig') }}
+
+    {# TODO SET IMAGE PAR DEFAULT OU IMAGE OBLIGATOIRE #}
+    <div>
+        <img src="{{ game.image }}" alt="Image {{ game.name }}">
+    </div>
+    <h1>{{ game.name }}</h1>
+
+    <div id="leaderboardWrapper">
+        <div id="categoriesWrapper" {{ stimulus_controller('leaderboard') }}>
+            {% for category in game.refCategories %}
+                <button data-categories="{{ category.uuid }}" class="categories" data-> {{ category.name }} </button>
+            {% endfor %}
+        </div>
+
+        <div id="leaderboard"></div>
+    </div>
+
 {% endblock %}

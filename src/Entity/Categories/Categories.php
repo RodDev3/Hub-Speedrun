@@ -210,5 +210,15 @@ class Categories
         return $this;
     }
 
+    public function getPrimaryComparison()
+    {
+        foreach ($this->getRefFields() as $field){
+            if (in_array('primary', $field->getConfig())) {
+                return $field;
+            }
+        }
+        return null;
+    }
+
     //TODO FAIRE UNE METHOD GET PRIMARY TIME QUI VIENT CHECK TOUT LES FIELDS
 }

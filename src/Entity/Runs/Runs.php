@@ -4,6 +4,7 @@ namespace App\Entity\Runs;
 
 use App\Entity\Categories\Categories;
 use App\Entity\FieldData\FieldData;
+use App\Entity\Fields\Fields;
 use App\Entity\Status\Status;
 use App\Entity\Users\Users;
 use App\Repository\Runs\RunsRepository;
@@ -135,5 +136,25 @@ class Runs
         $this->uuid = $uuid;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Fields>
+     */
+    public function getFields(): Collection
+    {
+        return $this->getRefCategories()->getRefFields();
+    }
+
+    public function getPrimaryComparisonData(Fields $primaryComparisonField)
+    {
+
+        foreach ($this->getRefFieldData() as $fieldData) {
+            if ($fieldData->getRefFields()->getId() === $primaryComparisonField->getId() && $fieldData->getRefRuns() === $this) {
+                return $fieldData;
+            }
+        }
+
+        return null;
     }
 }

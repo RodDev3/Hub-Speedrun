@@ -1,0 +1,18 @@
+<div>
+        Runs
+    {% for run in runs %}
+        <div class="players">
+
+        </div>
+        <div class="primaryComparison">
+                {#TODO CONDITION SI NUMBER COMPARISON #}
+                {% set comparisonData = run.getPrimaryComparisonData(primaryComparison) %}
+                {% if comparisonData is not null %}
+                        {{ comparisonData.data | formatTimer }}
+                {% else %}
+                        {# TODO RETIRER CE ELSE CAR PAS POSSIBLE NORMALEMENT #}
+                        No data available
+                {% endif %}
+        </div>
+    {% endfor %}
+</div>
