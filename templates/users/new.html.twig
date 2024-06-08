@@ -1,11 +1,31 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Users{% endblock %}
+{% block title %}Registration{% endblock %}
 
 {% block body %}
-    <h1>Create new Users</h1>
+    <h1>Registration</h1>
 
-    {{ include('users/_form.html.twig') }}
+    <div {{ stimulus_controller('forms') }}>
+
+        {{ form_start(form, {attr : stimulus_action('forms', 'newUserForm', 'submit').toArray()  } ) }}
+        {#{{ form_start(form, {attr : { id : 'newUserForm'}|merge(stimulus_action('forms', 'newUserForm', 'submit').toArray() ) } ) }}#}
+
+        {{ form_label(form.username) }}
+        {{ form_widget(form.username) }}
+
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email) }}
+
+        {{ form_label(form.password) }}
+        {{ form_widget(form.password) }}
+
+        {#{{ form_widget(form.submit) }}#}
+
+        <button type="submit" class="btn">{{ button_label|default('Save') }}</button>
+
+        {{ form_end(form, {render_rest: false}) }}
+    </div>
+
 
     <a href="{{ path('app_users_index') }}">back to list</a>
 {% endblock %}

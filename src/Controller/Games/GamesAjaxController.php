@@ -37,7 +37,7 @@ class GamesAjaxController extends AbstractController
             return  new JsonResponse(['message' =>'Invalid Game/Category'], 400);
         }
 
-        return $this->categoriesService->loadLeaderboard($categories);
+        return $this->categoriesService->loadSubCategories($categories);
 
     }
 }

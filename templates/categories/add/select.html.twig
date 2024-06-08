@@ -4,6 +4,11 @@
         <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][label]'
                placeholder='Title' aria-label='Title'>
     </div>
+    <div class='form-check form-switch'>
+        <input class='form-check-input checkboxValue' name='categories[fields][select.{{ uuid }}][subcategory]'
+               type='checkbox' role='switch' id=''>
+        <label class='form-check-label' for='flexSwitchCheckDefault'>SubCategorie ?</label>
+    </div>
     <div class='input-group mb-3'>
         <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][option.1]'
                placeholder='Option' aria-label=''>

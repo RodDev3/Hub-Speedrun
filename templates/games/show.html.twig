@@ -36,9 +36,28 @@
 
     <a href="{{ path('app_games_index') }}">back to list</a>
 
-    <a href="{{ path('app_games_edit', {'id': game.id}) }}">edit</a>
 
-    <a href="{{ path('app_categories_index', {'rewrite' : game.rewrite}) }}"> Manage Categories</a>
+
+    {% if user is not null %}
+
+        {% if user.getModerationRolesFromGames(game) is not null %}
+
+            {# Super mods button #}
+            {% if user.getModerationRolesFromGames(game).rankOrder <= ROLE_SMOD_RANK %}
+                <a href="{{ path('app_moderations_index', {'rewrite': game.rewrite}) }}"> Manage moderation team</a>
+            {% endif %}
+
+            {# Mods button #}
+            {% if user.getModerationRolesFromGames(game).rankOrder <= ROLE_MOD_RANK %}
+
+                <a href="{{ path('app_games_edit', {'id': game.id}) }}">edit</a>
+                <a href="{{ path('app_categories_index', {'rewrite' : game.rewrite}) }}"> Manage Categories</a>
+
+            {% endif %}
+
+        {% endif %}
+
+    {% endif %}
 
     {{ include('games/_delete_form.html.twig') }}
 
@@ -48,8 +67,8 @@
     </div>
     <h1>{{ game.name }}</h1>
 
-    <div id="leaderboardWrapper">
-        <div id="categoriesWrapper" {{ stimulus_controller('leaderboard') }}>
+    <div id="leaderboardWrapper" {{ stimulus_controller('leaderboard') }}>
+        <div id="categoriesWrapper">
             {% for category in game.refCategories %}
                 <button data-categories="{{ category.uuid }}" class="categories" data-> {{ category.name }} </button>
             {% endfor %}

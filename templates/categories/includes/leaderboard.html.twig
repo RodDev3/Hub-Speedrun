@@ -1,18 +1,107 @@
-<div>
-        Runs
-    {% for run in runs %}
-        <div class="players">
-
-        </div>
-        <div class="primaryComparison">
-                {#TODO CONDITION SI NUMBER COMPARISON #}
-                {% set comparisonData = run.getPrimaryComparisonData(primaryComparison) %}
-                {% if comparisonData is not null %}
-                        {{ comparisonData.data | formatTimer }}
+<div id="runs">
+    Runs
+    <table>
+        <tr>
+            <th>#</th>
+            <th>
+                {% if category.players > 1 %}
+                    Players
                 {% else %}
-                        {# TODO RETIRER CE ELSE CAR PAS POSSIBLE NORMALEMENT #}
-                        No data available
+                    Player
                 {% endif %}
-        </div>
-    {% endfor %}
+            </th>
+            <th>
+                {{ category.primaryComparison.config['label'] }}
+            </th>
+            {% if category.secondaryComparison is not null %}
+                <th>
+                    {{ category.secondaryComparison.config['label'] }}
+                </th>
+            {% endif %}
+            {% for field in category.getConfigLeaderboard %}
+                <th>
+                    {{ field.config['label'] }}
+                </th>
+            {% endfor %}
+        </tr>
+
+        {# Pour comparaison d'égalité #}
+        {% set prevPrimary = '' %}
+        {% set prevSecondary = '' %}
+        {% set pointer = 1 %}
+
+        {% for run in runs %}
+
+            {% set primaryComparisonData = run.getPrimaryComparisonData(primaryComparison) %}
+            {% set secondaryComparisonData = run.getSecondaryComparisonData(secondaryComparison) %}
+
+            <tr>
+                <td>
+                    {% if secondaryComparison is not null %}
+                        {% if primaryComparisonData.data is same as prevPrimary and secondaryComparisonData.data is same as prevSecondary %}
+                            -
+                        {% else %}
+                            {{ pointer }}
+                        {% endif %}
+                    {% else %}
+                        {% if primaryComparisonData.data is same as prevPrimary %}
+                            -
+                        {% else %}
+                            {{ pointer }}
+                        {% endif %}
+                    {% endif %}
+                </td>
+
+                <td>
+                    <div class="players">
+                        {% for player in run.refUsers %}
+                            <p>{{ player.username }}</p>
+                        {% endfor %}
+                    </div>
+                </td>
+                <td>
+
+                    <div class="primaryComparison">
+                        {# TODO CONDITION SI NUMBER COMPARISON #}
+
+                        {% if primaryComparisonData is not null %}
+                            {{ primaryComparisonData.data | formatTimer }}
+                        {% else %}
+                            {# TODO RETIRER CE ELSE CAR PAS POSSIBLE NORMALEMENT #}
+                            No data available
+                        {% endif %}
+                    </div>
+                </td>
+                <td>
+
+                    <div class="">
+                        {% if secondaryComparison is not null %}
+                            {% if secondaryComparisonData is not null %}
+                                {{ secondaryComparisonData.data | formatTimer }}
+                            {% else %}
+                                {# TODO RETIRER CE ELSE CAR PAS POSSIBLE NORMALEMENT #}
+                                No data available
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </td>
+                {% for categoryField in configFields %}
+                    <td>
+                        {% set fieldData = run.getDataFromField(categoryField) %}
+                        {% if fieldData is not null %}
+                            {{ fieldData.getData() }}
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+
+            {% if secondaryComparison is not null %}
+                {% set prevSecondary = secondaryComparisonData.data %}
+            {% endif %}
+            {% set prevPrimary = primaryComparisonData.data %}
+            {% set pointer = pointer+1 %}
+        {% endfor %}
+    </table>
 </div>

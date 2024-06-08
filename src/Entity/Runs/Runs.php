@@ -10,6 +10,7 @@ use App\Entity\Users\Users;
 use App\Repository\Runs\RunsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
 
@@ -153,6 +154,30 @@ class Runs
             if ($fieldData->getRefFields()->getId() === $primaryComparisonField->getId() && $fieldData->getRefRuns() === $this) {
                 return $fieldData;
             }
+        }
+
+        return null;
+    }
+    public function getSecondaryComparisonData(Fields $secondaryComparisonField)
+    {
+
+        foreach ($this->getRefFieldData() as $fieldData) {
+            if ($fieldData->getRefFields()->getId() === $secondaryComparisonField->getId() && $fieldData->getRefRuns() === $this) {
+                return $fieldData;
+            }
+        }
+
+        return null;
+    }
+
+    public function getDataFromField(Fields $fields): FieldData | null
+    {
+
+        //$criteria = Criteria::create()->andWhere(Criteria::expr()->eq("refFields.id", $fields->getId()));
+        $criteria = Criteria::create()->andWhere(Criteria::expr()->eq("refFields", $fields));
+
+        if ($this->getRefFieldData()->matching($criteria) !== null ) {
+            return $this->getRefFieldData()->matching($criteria)->first();
         }
 
         return null;

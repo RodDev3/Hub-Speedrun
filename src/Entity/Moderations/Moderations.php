@@ -6,6 +6,7 @@ use App\Entity\Games\Games;
 use App\Entity\Roles\Roles;
 use App\Entity\Users\Users;
 use App\Repository\Moderations\ModerationsRepository;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ModerationsRepository::class)]
@@ -65,4 +66,5 @@ class Moderations
 
         return $this;
     }
+
 }

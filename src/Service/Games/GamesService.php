@@ -21,4 +21,5 @@ class GamesService
     {
         return $this->entityManager->getRepository(Games::class)->findOneBy(['uuid' => $uuid]);
     }
+
 }

@@ -8,6 +8,7 @@ use SebastianBergmann\CodeCoverage\Report\Text;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,22 +23,17 @@ class UsersType extends AbstractType
                     'placeholder' => 'Username'
                 ]
             ])
-            /*->add('roles', ChoiceType::class,[
-                'choices' => [
-                    'test1',
-                    'Test2'
+            ->add('email', TextType::class,[
+                'attr' => [
+                    'placeholder' => 'Email'
                 ]
-            ])*/
+            ])
             ->add('password', TextType::class,[
                 'attr' => [
                     'placeholder' => 'Password'
                 ]
             ])
-            /*->add('refRuns', EntityType::class, [
-                'class' => Runs::class,
-                'choice_label' => 'id',
-                'multiple' => true,
-            ])*/
+            ->add('submit', SubmitType::class)
         ;
     }
 

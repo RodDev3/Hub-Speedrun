@@ -2,7 +2,9 @@
 
 namespace App\Repository\Moderations;
 
+use App\Entity\Games\Games;
 use App\Entity\Moderations\Moderations;
+use App\Entity\Roles\Roles;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

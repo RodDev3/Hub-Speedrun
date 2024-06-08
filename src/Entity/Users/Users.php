@@ -2,11 +2,14 @@
 
 namespace App\Entity\Users;
 
+use App\Entity\Games\Games;
 use App\Entity\Moderations\Moderations;
+use App\Entity\Roles\Roles;
 use App\Entity\Runs\Runs;
 use App\Repository\Users\UsersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -40,6 +43,9 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: Runs::class, mappedBy: 'refUsers')]
     private Collection $refRuns;
+
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
 
     public function __construct()
     {
@@ -177,5 +183,27 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getModerationRolesFromGames(Games $games): ?Roles
+    {
+        $criteria = Criteria::create()
+            ->where(Criteria::expr()->eq('refGames', $games));
+
+        $roles = $this->getRefModerations()->matching($criteria);
+
+        return $roles->isEmpty() ? null : $roles->first()->getRefRoles();
     }
 }

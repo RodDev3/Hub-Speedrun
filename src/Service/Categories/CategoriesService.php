@@ -6,12 +6,16 @@ use App\Entity\Categories\Categories;
 use App\Entity\FieldData\FieldData;
 use App\Entity\Fields\Fields;
 use App\Entity\FieldTypes\FieldTypes;
+use App\Entity\Runs\Runs;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpParser\Node\Expr\New_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Uid\Uuid;
+use function PHPUnit\Framework\isEmpty;
 
 class CategoriesService extends AbstractController
 {
@@ -168,6 +172,9 @@ class CategoriesService extends AbstractController
                                     }
                                     $field->addToConfig(['label' => trim(htmlspecialchars($data))]);
                                     break;
+                                case 'subcategory':
+                                    $field->addToConfig(['subCategory' => true]);
+                                    break;
                             }
                         }
 
@@ -256,36 +263,104 @@ class CategoriesService extends AbstractController
         return new JsonResponse($fields);
     }
 
-    public function loadLeaderboard(Categories $categories): JsonResponse
+    public function loadSubCategories(Categories $categories): JsonResponse
     {
 
+        //GetSubcategories
+        $subCategories = $categories->getSubCategories();
+
+        return new JsonResponse($this->renderView('categories/includes/subCategories.html.twig', [
+            'subCategories' => $subCategories,
+            'category' => $categories,
+        ]));
+
+    }
+
+    public function displayRunsByOptions(Categories $categories, array $options = null)
+    {
+
+        $runs = $categories->getRefRuns()->toArray();
+        //sort avec boucle options1 options2
+        $subCategories = $categories->getSubCategories();
+
+
+        $runs = array_filter($runs, function ($run) use ($options, $subCategories) {
+
+            //Tous les champs doivent matcher pour être dans le tableau filter
+            foreach ($subCategories as $subCategory) {
+                if ($run->getDataFromField($subCategory)->getData() != $options[$subCategory->getConfig()['label']]) {
+                    return false;
+                }
+            }
+            return true;
+        });
+
+        //Renvoie le template avec les infos
         $primaryComparisonField = $categories->getPrimaryComparison();
+
+        $secondaryComparisonField = $categories->getSecondaryComparison();
 
         //Si aucune comparaison est en place
         if (!$primaryComparisonField instanceof Fields) {
             return new JsonResponse(['message' => 'Wrong category configuration'], 400);
         }
 
-        /*$primaryComparisonData = [];*/
-
-        //Get primary comparaison
-        /*foreach ($categories->getRefRuns() as $key => $run) {
-            if ($primaryComparisonField instanceof Fields) {
-                $primaryComparisonData[] = $this->entityManager->getRepository(FieldData::class)->findOneBy(['refFields' => $primaryComparisonField->getId(), 'refRuns' => $run->getId()]);
-                break;
-            }
-        }*/
+        //Cas où aucune subCategories à afficher donc affichage des runs
 
 
-        /*if ($primaryComparisonData === null) {
-            return new JsonResponse(['message' => 'Wrong comparison configuration'], 400);
-        }*/
-
+        $configFields = $categories->getConfigLeaderboard();
 
 
         return new JsonResponse($this->renderView('categories/includes/leaderboard.html.twig', [
-            'runs' => $categories->getRefRuns(),
+            'runs' => $runs,
             'primaryComparison' => $primaryComparisonField,
+            'secondaryComparison' => $secondaryComparisonField,
+            'subCategories' => $categories->getSubCategories(),
+            'configFields' => $configFields,
+            'category' => $categories,
         ]));
+    }
+
+    public function sortRunsByComparisons(array $runs): array
+    {
+        //TODO FAIRE NUMBER ?
+
+        if (!empty($runs)) {
+
+            $categories = $runs[0]->getRefCategories();
+
+            $primaryComparisonField = $categories->getPrimaryComparison();
+
+            $secondaryComparisonField = $categories->getSecondaryComparison();
+
+            usort($runs, function ($a, $b) use ($primaryComparisonField, $secondaryComparisonField) {
+                $primaryA = $a->getPrimaryComparisonData($primaryComparisonField)->getData();
+                $primaryB = $b->getPrimaryComparisonData($primaryComparisonField)->getData();
+
+
+                if ($primaryA == $primaryB) {
+                    //Cas où pas de secondary
+                    if ($secondaryComparisonField === null) {
+                        return 0;
+                    }
+                    $secondaryA = $a->getSecondaryComparisonData($secondaryComparisonField)->getData();
+                    $secondaryB = $b->getSecondaryComparisonData($secondaryComparisonField)->getData();
+
+                    if ($secondaryA === null && $secondaryB === null) {
+                        return 0;
+                    } elseif ($secondaryA === null) {
+                        return 1;
+                    } elseif ($secondaryB === null) {
+                        return -1;
+                    } else {
+                        return $secondaryA <=> $secondaryB;
+                    }
+                }
+
+                return $primaryA <=> $primaryB;
+            });
+        }
+
+        return $runs;
     }
 }

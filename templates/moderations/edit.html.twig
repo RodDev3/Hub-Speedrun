@@ -1,0 +1,13 @@
+{% extends '../base.html.twig' %}
+
+{% block title %}Edit Moderations{% endblock %}
+
+{% block body %}
+    <h1>Edit Moderations</h1>
+
+    {{ include('moderations/moderations/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_moderations_moderations_index') }}">back to list</a>
+
+    {{ include('moderations/moderations/_delete_form.html.twig') }}
+{% endblock %}

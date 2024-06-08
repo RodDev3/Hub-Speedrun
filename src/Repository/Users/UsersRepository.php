@@ -2,6 +2,8 @@
 
 namespace App\Repository\Users;
 
+use App\Entity\Games\Games;
+use App\Entity\Roles\Roles;
 use App\Entity\Users\Users;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -47,6 +49,19 @@ class UsersRepository extends ServiceEntityRepository implements PasswordUpgrade
         return $query
             ->where($query->expr()->like('u.username', ':val'))
             ->setParameter('val', '%'.$research.'%')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    public function findUsersFromRolesAndGames(Roles $role, Games $games): array
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.refModerations', 'm')
+            ->andWhere('m.refRoles = :role')
+            ->setParameter('role', $role)
+            ->andWhere('m.refGames = :game')
+            ->setParameter('game', $games)
             ->getQuery()
             ->getResult()
             ;

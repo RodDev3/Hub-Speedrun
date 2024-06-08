@@ -27,14 +27,14 @@ class UsersController extends AbstractController
     {
         $user = new Users();
         $form = $this->createForm(UsersType::class, $user);
-        $form->handleRequest($request);
+        /*$form->handleRequest($request);
 
-        if ($form->isSubmitted() /*&& $form->isValid()*/) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($user);
             $entityManager->flush();
 
-            //return $this->redirectToRoute('app_users_index', [], Response::HTTP_SEE_OTHER);
-        }
+            return $this->redirectToRoute('app_users_index', [], Response::HTTP_SEE_OTHER);
+        }*/
 
         return $this->render('users/new.html.twig', [
             'user' => $user,

@@ -64,4 +64,48 @@ class CategoriesAjaxController extends AbstractController
 
         return $this->categoriesService->categoriesValidation($request,$category);
     }
+
+    #[Route('/call/subCategories/runs', name: 'app_subCategories_call_runs', methods: ['POST'])]
+    public function callSubCategoriesRuns(Request $request): Response
+    {
+        $data = json_decode($request->getContent(),true);
+
+        if ($data['subCategory'] === null){
+
+            //Check if category is valid
+            $categories = $this->entityManager->getRepository(Categories::class)->findOneBy(['uuid'=>$data['uuid']]);
+            if (!$categories instanceof Categories) {
+                return new JsonResponse(['message'=> 'Invalid category'], 400);
+            }
+
+            $subCategories = $categories->getSubCategories();
+            $options = [];
+
+            //build options[]
+            foreach ($subCategories as $subCategory){
+                $options = array_merge($options, [$subCategory->getConfig()["label"] => $subCategory->getConfig()["options"][0]]);
+            }
+            $options = array_merge($options, ['status' => 2]);
+
+            return $this->categoriesService->displayRunsByOptions($categories,$options);
+
+        }else{
+
+            //Check if category is valid
+            $categories = $this->entityManager->getRepository(Categories::class)->findOneBy(['uuid'=>$data['uuid']]);
+            if (!$categories instanceof Categories) {
+                return new JsonResponse(['message'=> 'Invalid category'], 400);
+            }
+
+            $options = $data['subCategory'];
+
+            return $this->categoriesService->displayRunsByOptions($categories,$options);
+
+            //TODO BUG SUR LEVENT DU SELECT SUREMENT PARCEQUE CEST REGENERER PAR LEVENT EN HTML A VOIR
+
+            //Faire la même que au dessus
+        }
+    }
+
+
 }

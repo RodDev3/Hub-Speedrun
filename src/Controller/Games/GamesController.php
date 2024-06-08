@@ -3,19 +3,32 @@
 namespace App\Controller\Games;
 
 use App\Entity\Games\Games;
+use App\Entity\Users\Users;
 use App\Form\Games\Games1Type;
 use App\Form\Games\GamesType;
 use App\Repository\Games\GamesRepository;
+use App\Service\Security\SecurityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
+use Twig\Environment;
 
 #[Route('/games')]
 class GamesController extends AbstractController
 {
+
+    public function __construct(
+        private Environment $twig,
+        private EntityManagerInterface $entityManager,
+    )
+    {
+        new SecurityService($this->twig, $this->entityManager);
+    }
+
+
     #[Route('/', name: 'app_games_index', methods: ['GET'])]
     public function index(GamesRepository $gamesRepository): Response
     {
@@ -48,8 +61,14 @@ class GamesController extends AbstractController
     #[Route('/{rewrite}', name: 'app_games_show', methods: ['GET'])]
     public function show(Games $game): Response
     {
+
+
+        /** @var Users $user */
+        $user =$this->getUser();
+
         return $this->render('games/show.html.twig', [
             'game' => $game,
+            'user' => $user,
         ]);
     }
 

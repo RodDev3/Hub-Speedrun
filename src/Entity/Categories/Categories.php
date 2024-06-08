@@ -8,6 +8,7 @@ use App\Entity\Runs\Runs;
 use App\Repository\Categories\CategoriesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -212,13 +213,47 @@ class Categories
 
     public function getPrimaryComparison()
     {
+
         foreach ($this->getRefFields() as $field){
-            if (in_array('primary', $field->getConfig())) {
+            if (array_key_exists('primary', $field->getConfig())) {
                 return $field;
             }
         }
         return null;
     }
 
-    //TODO FAIRE UNE METHOD GET PRIMARY TIME QUI VIENT CHECK TOUT LES FIELDS
+    public function getSecondaryComparison()
+    {
+
+        foreach ($this->getRefFields() as $field){
+            if (array_key_exists('secondary', $field->getConfig())) {
+                return $field;
+            }
+        }
+        return null;
+    }
+
+    public function getSubCategories(): array
+    {
+        $subCategories = [];
+        foreach ($this->getRefFields() as $field){
+            if (array_key_exists('subCategory', $field->getConfig())) {
+                $subCategories[] = $field;
+            }
+        }
+        return $subCategories;
+    }
+
+    public function getConfigLeaderboard(): array
+    {
+        //Possible de criteria sur order
+        //Pour l'ordre des champs à afficher
+        $subCategories = [];
+        foreach ($this->getRefFields() as $field){
+            if (!array_key_exists('subCategory', $field->getConfig()) && !array_key_exists('secondary', $field->getConfig()) && !array_key_exists('primary', $field->getConfig())) {
+                $subCategories[] = $field;
+            }
+        }
+        return $subCategories;
+    }
 }
