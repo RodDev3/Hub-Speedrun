@@ -1,35 +1,56 @@
-<div>
-    <div class='input-group mb-3'>
-        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][label]'
-               placeholder='Title' aria-label='Title'>
-    </div>
-    <div class='input-group mb-3'>
-        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][hours]'
-               placeholder='' aria-label='' disabled>
-        <span class='input-group-text'>h</span>
-        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][minutes]'
-               placeholder='' aria-label='' disabled>
-        <span class='input-group-text'>m</span>
-        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][seconds]'
-               placeholder='' aria-label='' disabled>
-        <span class='input-group-text'>s</span>
-        <input type='text' class='form-control' name='categories[fields][time-goal.{{ 'now'|date('U') }}][millisecond]'
-               placeholder='' aria-label='' disabled>
-        <span class='input-group-text'>ms</span>
+<div class="fieldAdded mt-4 pb-4">
+    <div class="row">
+
+        <div class='col-12 col-md-6 mb-3'>
+            <label class="form-label"
+                   for="">Name
+                of the
+                timing method *</label>
+            <input type='text' class='form-control'
+                   name='categories[fields][time-goal.{% if field is defined %}{{ field.uuid }}]{% else %}{{ 'now'|date('U') }}]{% endif %}[label]'
+                   aria-label='Name of the
+                timing method' {% if field is defined %} value="{{ field.config['label'] }}" {% endif %} >
+        </div>
+        {# <div class='col-12 col-md-6 mb-3'>
+                <input type='text' style="width: 75px;" class='' name='categories[fields][time-goal.{{ 'now'|date('U') }}][hours]'
+                       placeholder='' aria-label='hours' disabled>
+                <span class='input-group-text w-fit'>h</span>
+                <input type='text' style="width: 75px;"  class='' name='categories[fields][time-goal.{{ 'now'|date('U') }}][minutes]'
+                       placeholder='' aria-label='minutes' disabled>
+                <span class='input-group-text w-fit'>m</span>
+                <input type='text' style="width: 75px;"  class='' name='categories[fields][time-goal.{{ 'now'|date('U') }}][seconds]'
+                       placeholder='' aria-label='seconds' disabled>
+                <span class='input-group-text w-fit'>s</span>
+                <input type='text' style="width: 75px;"  class='' name='categories[fields][time-goal.{{ 'now'|date('U') }}][millisecond]'
+                       placeholder='' aria-label='millisecond' disabled>
+                <span class='input-group-text w-fit'>ms</span>
+        </div> #}
     </div>
     <div class='form-check form-switch'>
-        <input class='form-check-input checkboxValue' name='categories[fields][time-goal.{{ 'now'|date('U') }}][primary]'
-               type='checkbox' role='switch' id=''>
-        <label class='form-check-label' for='flexSwitchCheckDefault'>Timing value primary</label>
+        <input class='form-check-input checkboxValue'
+               name='categories[fields][time-goal.{% if field is defined %}{{ field.uuid }}]{% else %}{{ 'now'|date('U') }}]{% endif %}[primary]'
+               type='checkbox' role='switch' id=''
+               aria-label="primary" {% if field is defined and field.config['primary'] is defined %} checked {% endif %}>
+        <label class='form-check-label' for='flexSwitchCheckDefault'>Primary timing method</label>
     </div>
     <div class='form-check form-switch'>
-        <input class='form-check-input' name='categories[fields][time-goal.{{ 'now'|date('U') }}][secondary]'
-               type='checkbox' role='switch' id=''>
-        <label class='form-check-label' for='flexSwitchCheckDefault'>Timing value secondary</label>
+        <input class='form-check-input'
+               name='categories[fields][time-goal.{% if field is defined %}{{ field.uuid }}]{% else %}{{ 'now'|date('U') }}]{% endif %}[secondary]'
+               type='checkbox' role='switch' id=''
+               aria-label="secondary" {% if field is defined and field.config['secondary'] is defined %} checked {% endif %}>
+        <label class='form-check-label' for='flexSwitchCheckDefault'>Secondary timing method</label>
     </div>
-    <div class='form-check form-switch'>
-        <input class='form-check-input' name='categories[fields][time-goal.{{ 'now'|date('U') }}][mandatory]'
-               type='checkbox' role='switch' id=''>
+    {#<div class='form-check form-switch'>
+        <input class='form-check-input'
+               name='categories[fields][time-goal.{% if field is defined %}{{ field.uuid }}]{% else %}{{ 'now'|date('U') }}]{% endif %}[mandatory]'
+               type='checkbox' role='switch' id=''
+               aria-label="mandatory" {% if field is defined and field.config['mandatory'] is defined %} checked {% endif %}>
         <label class='form-check-label' for='flexSwitchCheckDefault'>Mandatory</label>
-    </div>
+    </div>#}
+
+    {% if field is not defined %}
+        <div class="mt-3 d-flex justify-content-start">
+            <button class="btn btn-delete deleteFieldButtons" type="button">Delete field</button>
+        </div>
+    {% endif %}
 </div>

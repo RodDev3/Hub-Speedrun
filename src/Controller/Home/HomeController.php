@@ -4,6 +4,7 @@ namespace App\Controller\Home;
 
 use App\Form\Categories\CategoriesType;
 use App\Form\SearchType;
+use App\Service\BootService\BootService;
 use App\Service\Search\SearchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,17 +16,18 @@ class HomeController extends AbstractController
 {
 
     public function __construct(
-        private SearchService $searchService
+        private SearchService $searchService,
+        private BootService $bootService
     ){}
 
-    #[Route('/', name: 'app_home_home')]
+    #[Route('/', name: 'app_home')]
     public function index(): Response
     {
         $search = $this->createForm(SearchType::class);
 
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
-            'searchBar' => $search->createView()
+            'searchBar' => $search->createView(),
+            'home' => true
         ]);
     }
 

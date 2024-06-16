@@ -21,7 +21,11 @@ class SearchType extends AbstractType
                 'choice_label' => 'name',
                 'autocomplete' => true,
             ])*/
-            ->add('search', TextType::class, [])
+            ->add('search', TextType::class, [
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Search'],
+                'label' => 'Search',
+
+            ])
         ;
     }
 

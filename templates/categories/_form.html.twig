@@ -1,41 +1,67 @@
 <div>
-    {{ form_start(form, {'attr' :{ 'id' : 'formCategories', 'data-controller': 'categoriesValidation' } } ) }}
+    {{ form_start(form, {'attr' :{ 'id' : 'formCategories', 'data-controller': 'categoriesValidation', 'data-categoriesValidation-uuid-value':category.uuid } } ) }}
 
     {{ form_row(form._token) }}
     {{ form_widget(form.refGames) }}
-    <div class="form-floating mb-3">
-        {{ form_widget(form.name) }}
-        {{ form_label(form.name) }}
+
+    <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name) }}
+        </div>
+        <div class="col-12 col-md-6 mb-3">
+            {{ form_label(form.players) }}
+            {{ form_widget(form.players, {'attr': category.uuid is not null ? {'readonly': 'readonly'} : {} } ) }}
+            {% if category.uuid is not null %}
+                {{ form_help(form.players) }}
+            {% endif %}
+        </div>
     </div>
-    <div class="form-floating mb-3">
-        {{ form_widget(form.rules) }}
+    <div class="mb-3">
         {{ form_label(form.rules) }}
+        {{ form_widget(form.rules) }}
     </div>
-    <div class="form-floating mb-3">
-        {{ form_widget(form.players) }}
-        {{ form_label(form.players) }}
+
+    <div class="form-check form-switch mb-3">
+        {{ form_label(form.videoMandatory) }}
+        {{ form_widget(form.videoMandatory) }}
     </div>
 
     <hr>
 
-    <h2>Submit Form configuration</h2>
+    <h2 class="mb-4">Other Fields/Information</h2>
 
-    <div id="newFields"></div>
 
-    <div class="input-group">
+    <div id="newFields">
+        {% if category.uuid is not null %}
+            {% for field in category.refFields %}
+                {% if 'primary' in field.config|keys or 'secondary' in field.config|keys %}
+                    {% include 'categories/add/timeGoal.html.twig' with {'field' : field} %}
+                {% endif %}
+                {% if 'options' in field.config|keys %}
+                    {% include 'categories/add/select.html.twig' with {'uuid' : field.uuid, 'field': field} %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="input-group mt-4">
         <select class="form-select addFields" id="addFields" aria-label="">
             <option selected>Choose...</option>
             {% for fieldType in fieldTypes %}
                 <option value="{{ fieldType.backName }}">{{ fieldType.displayName }}</option>
             {% endfor %}
         </select>
-        <button class="btn btn-outline-secondary addFieldsButton" data-fields="1" type="button">Button</button>
+        <button class="btn btn-outline-secondary addFieldsButton" data-fields="1" type="button">Add</button>
     </div>
     {# <div class="form-floating mb-3">
         {{ form_widget(form.refCategories) }}
         {{ form_label(form.refCategories) }}
     </div> #}
     {# {{ form_widget(form) }} #}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <div class="d-flex justify-content-between mt-3">
+        <a class="btn btn-primary" href="{{ path('app_categories_index', {'rewrite' : game.rewrite}) }}">Back to list</a>
+        <button class="btn btn-validation">{{ button_label|default('Save') }}</button>
+    </div>
     {{ form_end(form, {render_rest: false}) }}
 </div>

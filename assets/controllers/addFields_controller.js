@@ -4,6 +4,7 @@ import toastr from "toastr";
 export default class extends Controller {
     connect() {
 
+
         this.addFieldsButtons = this.element.querySelectorAll(".addFieldsButton");
         this.deleteFieldsButtons = this.element.querySelectorAll(".deleteFieldButtons");
 
@@ -33,7 +34,13 @@ export default class extends Controller {
     async add(e){
             e.preventDefault();
 
+            //loader
+            this.newFields.insertAdjacentHTML("beforeend", "<div id=\"loader\" class=\"mt-4 d-flex justify-content-center\"> <div class=\"spinner-border text-white\" role=\"status\">" +
+            "<span class=\"visually-hidden\">Loading...</span>" +
+            "</div></div>");
+
             let select = document.querySelector("#addFields");
+
 
             let response = await fetch('/categories/call/addField', {
                 method: 'POST',
@@ -43,8 +50,10 @@ export default class extends Controller {
             let data = await response.json();
 
             if (response.status === 200){
+                document.querySelector('#loader').remove();
                 this.newFields.insertAdjacentHTML("beforeend", data);
             }else if(response.status === 400){
+                document.querySelector('#loader').remove();
                 toastr.error(data.message,'Error');
             }
 

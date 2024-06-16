@@ -1,42 +1,56 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Moderations index{% endblock %}
+{% block title %}Moderation - {{ game.name }} - Hub Speedrun{% endblock %}
 
 {% block body %}
-    <h1>Moderations index</h1>
 
-    {% if moderations is not empty %}
-        {% for moderation in moderations %}
-            <h2>{{ moderation.role.name }}</h2>
-            {% for user in moderation.users %}
-                <h3>{{ user.username }}</h3>
-            {% endfor %}
-        {% endfor %}
-    {% endif %}
+    {{ include('games/includes/cardGame.html.twig') }}
+
+    <div class="container">
 
 
-    <button type="button" data-bs-toggle="modal" data-bs-target="#addUserModeration">Add User</button>
-
-    <div class="modal fade" id="addUserModeration" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add user to moderation</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        {% if moderations is not empty %}
+            {% for moderation in moderations %}
+                <div class="mt-4">
+                    <h2 class="fw-bold fs-1">{{ moderation.role.name }}</h2>
                 </div>
-                <div class="modal-body" {{ stimulus_controller('manageUserModeration', {
-                    rewrite : game.rewrite
-                }) }}>
-                    {{ form_start(form, {'attr' : { id : 'manageUsersModeration'} }) }}
+                <div class="d-flex column-gap-3 mt-3">
+                    {% if moderation.users|length == 0 %}
+                        <p>No {{ moderation.role.name }} </p>
+                    {% endif %}
+                    {% for user in moderation.users %}
+                        <p>{{ user.username }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% endif %}
 
-                    {{ form_label(form.refUsers) }}
-                    {{ form_widget(form.refUsers) }}
 
-                    {{ form_widget(form.refGames) }}
+        <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#addUserModeration">Manage Users</button>
 
+        <div class="modal fade" id="addUserModeration" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Manage users in moderation</h1>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" {{ stimulus_controller('manageUserModeration', {
+                        rewrite : game.rewrite
+                    }) }}>
+                        {{ form_start(form, {'attr' : { id : 'manageUsersModeration'} }) }}
 
+                        {{ form_label(form.refUsers) }}
+                        {{ form_widget(form.refUsers) }}
 
-                    {{ form_end(form, {render_rest: false } ) }}
+                        {{ form_widget(form.refGames) }}
+
+                        <div id="roles" class="mt-4"></div>
+
+                        {{ form_end(form, {render_rest: false } ) }}
+                    </div>
                 </div>
             </div>
         </div>

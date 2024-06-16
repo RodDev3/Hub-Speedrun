@@ -8,6 +8,8 @@ use SebastianBergmann\CodeCoverage\Report\Text;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,20 +22,22 @@ class UsersType extends AbstractType
         $builder
             ->add('username', TextType::class,[
                 'attr' => [
-                    'placeholder' => 'Username'
-                ]
+                    'class' => 'form-control',
+                ],
+                'label' => 'Username *'
             ])
-            ->add('email', TextType::class,[
+            ->add('email', EmailType::class,[
                 'attr' => [
-                    'placeholder' => 'Email'
-                ]
+                    'class' => 'form-control',
+                ],
+                'label' => 'Email *'
             ])
-            ->add('password', TextType::class,[
+            ->add('password', PasswordType::class,[
                 'attr' => [
-                    'placeholder' => 'Password'
-                ]
+                    'class' => 'form-control',
+                ],
+                'label' => 'Password *'
             ])
-            ->add('submit', SubmitType::class)
         ;
     }
 

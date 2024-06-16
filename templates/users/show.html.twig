@@ -1,34 +1,125 @@
-{% extends '../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Users{% endblock %}
+{% block title %}{{ user.username }}'s profile - Hub Speedrun{% endblock %}
 
 {% block body %}
-    <h1>Users</h1>
+    <div class="container mt-5">
+        <h1>{{ user.username }}'s profile</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Username</th>
-                <td>{{ user.username }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <h2 class="mt-4" {{ stimulus_controller('forms') }} data-forms-username-value="{{ user.username }}">
+            {{ form_start(form, {'attr' :{ 'id' : 'updateUser', 'data-action': 'forms#updateUser' } }) }}
+            <div class="row mt-3">
+                <div class="col-12 col-md-6">
+                    {{ form_label(form.username) }}
+                    {{ form_widget(form.username) }}
+                </div>
+                <div class="col-12 col-md-6">
+                    {{ form_label(form.email) }}
+                    {{ form_widget(form.email) }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 col-md-6">
+                    {{ form_label(form.password) }}
+                    {{ form_widget(form.password) }}
+                </div>
+            </div>
 
-    <a href="{{ path('app_users_users_index') }}">back to list</a>
+            <div class="d-flex justify-content-end">
+                <button class="btn-validation btn">Udpate</button>
+            </div>
+            {{ form_end(form, {render_rest: false}) }}
+        </h2>
 
-    <a href="{{ path('app_users_users_edit', {'id': user.id}) }}">edit</a>
+        <h2 class="mt-4">Your personal bests</h2>
+        <div id="runs">
+            {% if runOrderedInGame|length == 0 %}
+                <div class="w-100 mt-4 text-center">
+                    No runs
+                </div>
+            {% else %}
+                <table id="tableVerif" {{ stimulus_controller('linkLeaderboard') }} class="w-100 mt-4">
+                    <thead>
+                        <tr>
+                            <th class="">Games</th>
+                            <th class="">Categories</th>
+                            <th class="">Times</th>
+                        </tr>
+                    </thead>
 
-    {{ include('users/users/_delete_form.html.twig') }}
+                    {% for game in runOrderedInGame %}
+
+                        {% for run in game %}
+
+
+
+                            {% set category = run.getRefCategories %}
+
+                            {% set primaryComparisonData = run.getPrimaryComparisonData(category.getPrimaryComparison) %}
+
+                            {% set secondaryComparison = category.getSecondaryComparison %}
+
+                            {% if secondaryComparison is not null %}
+                                {% set secondaryComparisonData = run.getSecondaryComparisonData(category.getSecondaryComparison) %}
+                            {% endif %}
+
+                            <tr class="rowLeaderboard"
+                                data-href="{{ path('app_runs_show', {'rewrite': category.refGames.rewrite, 'uuid' : run.uuid}) }}">
+                                <td class="position text-center d-flex align-items-center column-gap-2">
+                                    <img src="{{ run.getRefGame.image }}" alt="image {{ run.getRefGame.name }}"
+                                         width="90"
+                                         height="130">
+                                    <p class="fs-5">{{ run.getRefGame.name }}</p>
+                                </td>
+
+                                <td>
+                                    <span> <strong>{{ category.name }}</strong></span><br>
+                                    {% for subcategory in category.getSubCategories %}
+                                        {% if loop.first %}
+                                            <span>{{ run.getDataFromField(subcategory).data }}</span>
+
+                                        {% else %}
+                                            <span>/ {{ run.getDataFromField(subcategory).data }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+
+                                <td>
+
+                                    <div class="primaryComparison">
+                                        {% if primaryComparisonData is not null %}
+                                            <span><strong>{{ category.getPrimaryComparison.config['label'] }}</strong></span>
+                                            <br>
+                                            <span>{{ primaryComparisonData.data | formatTimer }}</span>
+                                        {% else %}
+                                            ---
+                                        {% endif %}
+                                        {% if secondaryComparison is not null %}
+                                            <br>
+                                            {% if secondaryComparisonData is not null %}
+                                                <span><strong>{{ category.getSecondaryComparison.config['label'] }}</strong></span>
+                                                <br>
+                                                <span>{{ secondaryComparisonData.data | formatTimer }}</span>
+                                            {% else %}
+                                                <span><strong>{{ category.getSecondaryComparison.config['label'] }}</strong></span>
+                                                <br>
+                                                ---
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+
+                                    <div class="text-center">
+
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </table>
+            {% endif %}
+        </div>
+    </div>
+
 {% endblock %}

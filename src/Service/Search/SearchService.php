@@ -5,10 +5,11 @@ namespace App\Service\Search;
 use App\Entity\Games\Games;
 use App\Entity\Users\Users;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class SearchService
+class SearchService extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager
@@ -16,11 +17,20 @@ class SearchService
 
     public function getResultFromSearch(string $search): JsonResponse
     {
+
+        if (trim(htmlspecialchars($search)) === ""){
+            return new JsonResponse([
+                'status' => Response::HTTP_OK,
+                'players' => "",
+                'games' => ""
+            ]);
+        }
+
         /* @var Games[] $games */
-        $games = $this->entityManager->getRepository(Games::class)->getGamesFromResearch($search);
+        $games = $this->entityManager->getRepository(Games::class)->getGamesFromResearch(htmlspecialchars($search));
 
         /* @var Users[] $players */
-        $players = $this->entityManager->getRepository(Users::class)->getPlayersFromResearch($search);
+        $players = $this->entityManager->getRepository(Users::class)->getPlayersFromResearch(htmlspecialchars($search));
 
 
         $arrayGames = [];
@@ -41,7 +51,9 @@ class SearchService
         return new JsonResponse([
             'status' => Response::HTTP_OK,
             'players' => $arrayPlayers,
-            'games' => $arrayGames,
+            'games' => $this->renderView('/search/games.html.twig', [
+                'games' => $arrayGames,
+            ]),
         ]);
     }
 }

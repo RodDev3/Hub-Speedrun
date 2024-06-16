@@ -41,8 +41,8 @@ export default class extends Controller {
         this.pointer += 1;
 
         this.newOptions.insertAdjacentHTML("beforeend", "<div class='input-group mb-3'>" +
-            "<input type='text' class='form-control' name='categories[fields][select." + this.uuidValue + "][option." + this.pointer + "]' placeholder='Option' aria-label=''>" +
-            "<button class='btn btn-outline-secondary deleteButtonSelect' type='button' id=''>Delete</button>" +
+            "<input type='text' class='form-control' name='categories[fields][select." + this.uuidValue + "][option." + this.pointer + "]' placeholder='Option *' aria-label=''>" +
+            "<button class='btn btn-outline-delete deleteButtonSelect' type='button' id=''>Delete</button>" +
             "</div>"
         );
 

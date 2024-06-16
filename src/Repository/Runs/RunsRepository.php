@@ -5,7 +5,9 @@ namespace App\Repository\Runs;
 use App\Entity\Categories\Categories;
 use App\Entity\Fields\Fields;
 use App\Entity\Runs\Runs;
+use App\Entity\Users\Users;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query;
@@ -62,8 +64,7 @@ class RunsRepository extends ServiceEntityRepository
             ->andWhere('r.refStatus = :status')
             ->setParameter('status', 2)
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     public function getAllAcceptedAndObsoleteRuns($categories): array
@@ -74,8 +75,7 @@ class RunsRepository extends ServiceEntityRepository
             ->andWhere('r.refStatus = :status')
             ->setParameter('status', 4)
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
     }
 
     public function getRunsByCategoriesOrderByTimes(Categories $categories, array $filters = []): array
@@ -101,7 +101,7 @@ class RunsRepository extends ServiceEntityRepository
 
         $sql .= " FROM Runs as r JOIN field_data as fdPrimary ON r.id = fdPrimary.ref_runs_id";
 
-        if ($secondary){
+        if ($secondary) {
             $sql .= " JOIN field_data as fdSecondary ON r.id = fdSecondary.ref_runs_id";
         }
 
@@ -129,11 +129,64 @@ class RunsRepository extends ServiceEntityRepository
         $query->setParameter('categoriesId', $categories->getId());
         $query->setParameter('primaryId', $primaryFields->getId());
 
-        if ($secondary){
+        if ($secondary) {
             $query->setParameter('secondaryId', $secondaryFields->getId());
         }
 
 
         return $query->getResult();
+    }
+
+    public function findByCategorieAndFieldAndData(Categories $categories, Fields $fields, string $data): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.refFieldData', 'fd', 'r.id = fd.ref_runs_id')
+            ->andWhere('r.refCategories = :categories')
+            ->setParameter('categories', $categories)
+            ->andWhere('fd.refFields = :fields')
+            ->setParameter('fields', $fields)
+            ->andWhere('fd.data = :data')
+            ->setParameter('data', $data)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByUsersAndCategory(Collection $users, Categories $category): array
+    {
+
+        $builder = $this->createQueryBuilder('r')
+            ->join('r.refUsers', 'u')
+            ->andWhere('u.id IN (:users)')
+            ->andWhere('r.refCategories = :category')
+            ->setParameter('category', $category)
+            ->andWhere('r.refStatus = :status')
+            ->setParameter('status', 2)
+            ->groupBy('r.id')
+            ->having('COUNT(u.id) = :userCount')
+            ;
+            $builder->andWhere(
+                $builder->expr()->eq(
+                    '(SELECT COUNT(u2.id) FROM ' . Runs::class . ' r2 JOIN r2.refUsers u2 WHERE r2.id = r.id)',
+                    ':userCount'
+                )
+            )
+            ->setParameter('users', $users)
+            ->setParameter('userCount', $users->count());
+
+            return $builder->getQuery()
+            ->getResult()
+            ;
+
+    }
+
+    public function findByUser(Users $users){
+        return $this->createQueryBuilder('r')
+            ->join('r.refUsers', 'u')
+            ->andWhere('u.id = :user')
+            ->setParameter('user', $users->getId())
+            ->andWhere('r.refStatus = :status')
+            ->setParameter('status', 2)
+            ->getQuery()
+            ->getResult();
     }
 }

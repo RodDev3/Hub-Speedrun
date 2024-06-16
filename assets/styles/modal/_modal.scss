@@ -1,0 +1,41 @@
+@use '../vars.scss';
+
+.btn-close {
+}
+
+.modal {
+    .modal-dialog {
+
+    }
+
+    .modal-content {
+
+        background-color: vars.$color1;
+
+        .modal-header {
+
+        }
+
+        .modal-body {
+
+        }
+    }
+
+    .ts-wrapper {
+
+        background: transparent;
+        border: 2px solid white;
+        color: white;
+
+        .ts-control {
+            color: white;
+
+            input{
+                color: white;
+            }
+            input::placeholder {
+                color: white;
+            }
+        }
+    }
+}

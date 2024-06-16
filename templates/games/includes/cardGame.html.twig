@@ -1,0 +1,61 @@
+<div id="gameWrapper" class="container">
+    <div id="cardGameRow" class="row">
+        <div id="cardGame">
+            <div id="gameInfo" class="col-12">
+                <img src="{{ game.image }}" alt="Image {{ game.name }}" width="90" height="130">
+                <div class="row justify-content-center">
+                    <h1 class="col-12">{{ game.name }} ({{ game.releaseDate|date('Y') }}) </h1>
+                    <div class="col-12">
+                        {% for support in game.refSupports %}
+                            {{ support.name }}
+                        {% endfor %}
+                    </div>
+                    <div>
+                        {% if game.discordLink is not null %}
+                            <a href="{{ game.discordLink }}" class="btn btn-primary">Discord</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if USER is not null %}
+
+        {% if 'ROLE_ADMIN' in USER.getRoles or USER.getModerationRolesFromGames(game) is not null %}
+
+            <div class="row">
+
+                <div id="moderationActions" class="col-12 mb-3 d-flex column-gap-3 flex-wrap row-gap-2 mb-5">
+
+                    {# Super mods button #}
+                    {% if 'ROLE_ADMIN' in USER.getRoles or USER.getModerationRolesFromGames(game).rankOrder <= ROLE_SMOD_RANK %}
+                        <a class="btn btn-primary"
+                           href="{{ path('app_moderations_index', {'rewrite': game.rewrite}) }}">
+                            Manage moderation team</a>
+                    {% endif %}
+
+
+
+                    {# Mods button #}
+                    {% if 'ROLE_ADMIN' in USER.getRoles or USER.getModerationRolesFromGames(game).rankOrder <= ROLE_MOD_RANK %}
+
+                        <a class="btn btn-primary" href="{{ path('app_games_edit', {'uuid': game.uuid}) }}">Edit Game</a>
+                        <a class="btn btn-primary"
+                           href="{{ path('app_categories_index', {'rewrite' : game.rewrite}) }}">
+                            Manage Categories</a>
+
+                    {% endif %}
+
+                    {% if 'ROLE_ADMIN' in USER.getRoles or USER.getModerationRolesFromGames(game).rankOrder <= ROLE_VERIF_RANK %}
+                        <a class="btn btn-primary" href="{{ path('app_runs_verif_list', {'rewrite' : game.rewrite}) }}">Runs
+                            Verifications</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+    {% endif %}
+
+
+</div>

@@ -43,9 +43,10 @@ class CategoriesAjaxController extends AbstractController
 
     }
 
-    #[Route('/call/submit', name: 'app_categories_call_submit', methods: ['POST'])]
-    public function callSubmit(Request $request): Response
+    #[Route('/call/submit/{uuid}', name: 'app_categories_call_submit', methods: ['POST'])]
+    public function callSubmit(Request $request, string $uuid): Response
     {
+
         $requestCategories = $request->request->all('categories');
 
         $game = $this->gamesService->getGameFromUuid($requestCategories['refGames']);
@@ -55,9 +56,26 @@ class CategoriesAjaxController extends AbstractController
             return new JsonResponse(['message'=> 'An error occurred'], 400);
         }
 
-        $category = new Categories();
+        if ($uuid == 'null'){
+            //Create
+            $category = new Categories();
+        }else{
+            //Edit
+            $category = $this->entityManager->getRepository(Categories::class)->findOneBy(['uuid' => $uuid ]);
+        }
+        if (!$category instanceof Categories){
+            //Error while Edit
+            return new JsonResponse(['message' => 'An error occurred while retrieving the category'], 400);
+        }
+
+        $categoryClone = clone  $category;
+
         $form = $this->createForm(CategoriesType::class, $category, ['game' => $game] );
         $form->handleRequest($request);
+
+        if ($uuid != 'null'){
+            $category->setPlayers($categoryClone->getPlayers());
+        }
 
         //Set le Game car non mapped
         $category->setRefGames($game);
@@ -98,12 +116,9 @@ class CategoriesAjaxController extends AbstractController
             }
 
             $options = $data['subCategory'];
+            $options = array_merge($options, ['status' => 2]);
 
             return $this->categoriesService->displayRunsByOptions($categories,$options);
-
-            //TODO BUG SUR LEVENT DU SELECT SUREMENT PARCEQUE CEST REGENERER PAR LEVENT EN HTML A VOIR
-
-            //Faire la même que au dessus
         }
     }
 

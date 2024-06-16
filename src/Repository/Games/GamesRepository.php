@@ -25,11 +25,11 @@ class GamesRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('g');
 
-        //TODO faire en sort que si l'on revienne en arriere cela ne donne pas tous les jeux
         return $query
             ->where($query->expr()->like('g.name', ':val'))
             ->setParameter('val', '%'.$research.'%')
             ->andWhere('g.active = 1')
+            ->setMaxResults(5)
             ->getQuery()
             ->getResult()
             ;

@@ -1,43 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Games index{% endblock %}
+{% block title %}Games List - Hub Speedrun{% endblock %}
 
 {% block body %}
-    <h1>Games index</h1>
+    <div class="container mt-5">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>ReleaseDate</th>
-                <th>DiscordLink</th>
-                <th>Image</th>
-                <th>Rewrite</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for game in games %}
-            <tr>
-                <td>{{ game.id }}</td>
-                <td>{{ game.name }}</td>
-                <td>{{ game.releaseDate ? game.releaseDate|date('Y-m-d') : '' }}</td>
-                <td>{{ game.discordLink }}</td>
-                <td>{{ game.image }}</td>
-                <td>{{ game.rewrite }}</td>
-                <td>
-                    <a href="{{ path('app_games_show', {'rewrite': game.rewrite}) }}">show</a>
-                    <a href="{{ path('app_games_edit', {'id': game.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <h1>Games List</h1>
 
-    <a href="{{ path('app_games_new') }}">Create new</a>
+        <div class="d-flex justify-content-end mt-4 mb-3">
+            <a class="btn btn-validation" href="{{ path('app_games_new') }}">Create new</a>
+        </div>
+
+
+        <table id="tableCategories" class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                    <tr class="rowLeaderboard noPointer">
+                        <td>{{ game.name }}</td>
+                        <td class="text-center">
+                            <a class="btn btn-primary" href="{{ path('app_games_show', {'rewrite': game.rewrite}) }}">Show</a>
+                            <a class="btn btn-primary" href="{{ path('app_games_edit', {'uuid': game.uuid}) }}">Edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">no games found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

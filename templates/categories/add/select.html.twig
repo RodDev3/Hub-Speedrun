@@ -1,32 +1,65 @@
-<div {{ stimulus_controller('manageSelect', { 'uuid': uuid } ) }}>
+<div class="fieldAdded mt-4 pb-4" {{ stimulus_controller('manageSelect', { 'uuid': uuid } ) }}>
 
-    <div class='input-group mb-3'>
-        <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][label]'
-               placeholder='Title' aria-label='Title'>
-    </div>
-    <div class='form-check form-switch'>
-        <input class='form-check-input checkboxValue' name='categories[fields][select.{{ uuid }}][subcategory]'
-               type='checkbox' role='switch' id=''>
-        <label class='form-check-label' for='flexSwitchCheckDefault'>SubCategorie ?</label>
-    </div>
-    <div class='input-group mb-3'>
-        <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][option.1]'
-               placeholder='Option' aria-label=''>
-        <button class="btn btn-outline-secondary deleteButtonSelect" type="button" id="">Delete</button>
-    </div>
-    <div class='input-group mb-3'>
-        <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][option.2]'
-               placeholder='Option' aria-label=''>
-        <button class="btn btn-outline-secondary deleteButtonSelect" type="button" id="">Delete</button>
-    </div>
+    <div class="row">
+        <div class='col-12 col-md-6 mb-3'>
+            <label for='categories[fields][select.{{ uuid }}][label]'>Name of the list *</label>
+            <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][label]'
+                   aria-label='Title' {% if field is defined %} value="{{ field.config['label'] }}" {% endif %}>
+        </div>
+        <div class='col-12 col-md-6 form-check form-switch mt-1 d-flex align-items-center column-gap-2'>
+            <input class='form-check-input checkboxValue'
+                   name='categories[fields][select.{{ uuid }}][subcategory]'
+                   type='checkbox'
+                   role='switch' {% if field is defined and field.config['subCategory'] is defined %} checked {% endif %}>
+            <label class='form-check-label'
+                   for='categories[fields][select.{{ uuid }}][subcategory]'>SubCategory</label>
 
-    <div id="newOptions"></div>
+            {% if field is defined %}
+                <div class="help-text">Switching to subCategory can cause some runs to not appear anymore check
+                    the runs verification
+                </div>
 
-    <div class='input-group mb-3'>
-        <button id="addButton" class="btn btn-outline-secondary Oui oui oui" type="button">Add Options</button>
+            {% endif %}
+
+        </div>
     </div>
 
-    <div class='input-group mb-3'>
-        <button class="btn btn-outline-secondary deleteFieldButtons" type="button">Delete Field</button>
+    {# Case Update or Create #}
+    {% if field is not defined %}
+        <div class='input-group mb-3'>
+            <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][option.1]'
+                   placeholder='Option *' aria-label='option'>
+            <button class="btn btn-outline-delete deleteButtonSelect" type="button" id="">Delete</button>
+        </div>
+        <div class='input-group mb-3'>
+            <input type='text' class='form-control' name='categories[fields][select.{{ uuid }}][option.2]'
+                   placeholder='Option *' aria-label='option'>
+            <button class="btn btn-outline-delete deleteButtonSelect" type="button" id="">Delete</button>
+        </div>
+    {% endif %}
+
+    <div id="newOptions">
+
+        {# Case Update or Create #}
+        {% if field is defined %}
+            {% for key, option in field.config['options'] %}
+                <div class='input-group mb-3'>
+                    <input type='text' class='form-control'
+                           name='categories[fields][select.{{ uuid }}][option.{{ key }}]'
+                           placeholder='Option *' aria-label='' value="{{ option }}">
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {% if field is defined %}
+        <div class="help-text">Update existing options name will update all runs that contain the option name</div>
+    {% endif %}
+
+    <div class="d-flex mt-3 justify-content-between">
+        <button id="addButton" class="btn btn-primary" type="button">Add Options</button>
+        {% if field is not defined %}
+            <button class="btn btn-delete deleteFieldButtons" type="button">Delete List</button>
+        {% endif %}
     </div>
 </div>

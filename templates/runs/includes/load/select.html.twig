@@ -1,9 +1,10 @@
-<div>
-    <label for="fields[{{ fields.uuid }}]">{{ fields.config.label }}</label>
-    <select name="fields[{{ fields.uuid }}]" id="" class="">
-        {% for option in fields.config.options %}
-            <option value="{{ option }}">{{ option }}</option>
-        {% endfor %}
-    </select>
+<div class="row mt-3">
+    <div class="col-12 col-md-6">
+        <label for="fields[{{ fields.uuid }}]">{{ fields.config.label }} *</label>
+        <select name="fields[{{ fields.uuid }}]" id="" class="form-select">
+            {% for option in fields.config.options %}
+                <option value="{{ option }}">{{ option }}</option>
+            {% endfor %}
+        </select>
     </div>
 </div>

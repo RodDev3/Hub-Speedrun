@@ -11,10 +11,14 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use function Sodium\add;
 
 class RunsSubmitType extends AbstractType
 {
@@ -34,8 +38,9 @@ class RunsSubmitType extends AbstractType
                 },
                 'choice_label' => 'name',
                 'choice_value' => 'uuid'
-            ]);
+            ])
 
+        ;
         /*if ($category !== null) {
             $fields = $category->getRefFields();
 
@@ -67,7 +72,7 @@ class RunsSubmitType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Runs::class,
             'category' => null,
-            'allow_extra_fields'=> true,
+            'allow_extra_fields' => true,
         ]);
     }
 }

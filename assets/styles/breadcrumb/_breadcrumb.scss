@@ -1,0 +1,22 @@
+@use '../vars.scss';
+
+.breadcrumb{
+    margin-top: 25px;
+    .breadcrumb-item{
+        &:hover{
+            text-decoration: underline;
+        }
+        &::before{
+            color: white;
+        }
+    }
+    .breadcrumb-item.active{
+        color: rgba(255,255,255,0.7);
+        &:hover{
+            text-decoration: none;
+        }
+        &::before{
+            color: white;
+        }
+    }
+}

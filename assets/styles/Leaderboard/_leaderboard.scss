@@ -1,0 +1,49 @@
+@import "../vars.scss";
+
+#leaderboardWrapper {
+    #categoriesWrapper {
+        .active{
+            color: $color2;
+            background-color: white;
+            border-color: white;
+        }
+    }
+
+    div#leaderboard {
+        color: white;
+
+        #subCategoriesWrapper {
+            #subCategoriesForm {
+                column-gap: 25px;
+            }
+        }
+
+        #runs {
+            table#leaderboard {
+                thead {
+                    height: 45px;
+                    background-color: rgba(0, 0, 0, 0.6);
+                    position: sticky;
+                }
+
+                .rowLeaderboard {
+                    height: 45px;
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: hsla(0, 0%, 100%, .075) !important;
+                    }
+                }
+
+                .rowLeaderboard:nth-child(2n+1) {
+                    background-color: rgba(0, 0, 0, .09);
+                }
+
+                .rowLeaderboard:nth-child(2n) {
+                    background-color: rgba(0, 0, 0, .4);
+                }
+            }
+
+        }
+    }
+}

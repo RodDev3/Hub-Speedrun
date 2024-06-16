@@ -20,12 +20,6 @@ class Fields
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?bool $display = null;
-
-    #[ORM\Column]
-    private ?bool $quickFilter = null;
-
-    #[ORM\Column]
     private array $config = [];
 
     #[ORM\ManyToOne(inversedBy: 'refFields')]
@@ -52,30 +46,6 @@ class Fields
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function isDisplay(): ?bool
-    {
-        return $this->display;
-    }
-
-    public function setDisplay(bool $display): static
-    {
-        $this->display = $display;
-
-        return $this;
-    }
-
-    public function isQuickFilter(): ?bool
-    {
-        return $this->quickFilter;
-    }
-
-    public function setQuickFilter(bool $quickFilter): static
-    {
-        $this->quickFilter = $quickFilter;
-
-        return $this;
     }
 
     public function getConfig(): array

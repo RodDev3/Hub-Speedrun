@@ -1,0 +1,17 @@
+<h1>Your run has been checked</h1>
+
+{% set primaryComparisonField = run.refCategories.primaryComparison %}
+<p>Your {{ run.primaryComparisonData(primaryComparisonField).data|formatTimer }} in {{ run.refGame.name }}
+    {% for subcategorieField in run.refCategories.subCategories %}
+        {{ run.dataFromField(subcategorieField).data }}
+    {% endfor %}
+    has been
+    {% if run.refStatus.id == 2 %}
+        <strong>accepted</strong>
+    {% elseif run.refStatus.id == 3 %}
+        <strong>rejected</strong>
+    {% endif %}
+</p>
+{% if run.refStatus.id == 3 %}
+    <p>Reason : {{ run.modNotes }} </p>
+{% endif %}

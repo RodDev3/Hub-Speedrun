@@ -15,8 +15,6 @@ class FieldsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('display')
-            ->add('quickFilter')
             ->add('config')
             ->add('refCategories', EntityType::class, [
                 'class' => Categories::class,

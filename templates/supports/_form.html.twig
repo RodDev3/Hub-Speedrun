@@ -1,4 +1,16 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="mt-4" {% if support.id is not null %} data-forms-id-value="{{ support.id }}" {% endif %} {{ stimulus_controller('forms') }}>
+
+    {{ form_start(form ,{attr : stimulus_action('forms', 'supportForm').toArray() }) }}
+
+    <div class="row">
+        <div class="col-12 col-md-6">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name) }}
+
+        </div>
+    </div>
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-validation">{{ button_label|default('Save') }}</button>
+    </div>
+    {{ form_end(form) }}
+</div>

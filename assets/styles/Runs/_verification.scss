@@ -1,0 +1,37 @@
+@use '../vars.scss';
+
+table#tableVerif, table#tableCategories{
+    --bs-table-bg: vars.$color2;
+    --bs-table-color: white;
+    thead{
+        background-color: rgba(0, 0, 0, 0.6);
+        position: sticky;
+    }
+    td,th{
+        border: none;
+    }
+    .noPointer{
+        &:hover{
+          cursor: default!important;
+
+        }
+    }
+    .rowLeaderboard{
+        &:hover{
+            cursor: pointer;
+            background-color: hsla(0, 0%, 100%, .075) !important;
+        }
+        #categories{
+            .subCategories{
+                font-size: 15px;
+            }
+        }
+    }
+    .rowLeaderboard:nth-child(2n+1) {
+        background-color: rgba(0, 0, 0, .09);
+    }
+
+    .rowLeaderboard:nth-child(2n) {
+        background-color: rgba(0, 0, 0, .4);
+    }
+}

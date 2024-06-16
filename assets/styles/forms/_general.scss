@@ -1,0 +1,28 @@
+@use '../vars.scss';
+
+form {
+    select.form-select {
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+
+        option {
+            color: vars.$color1
+        }
+    }
+
+    textarea.form-control {
+        min-height: 90px;
+    }
+
+    /*input:disabled{
+        background-color: darkgrey!important;
+        border-color: darkgray!important;
+    }*/
+
+    input.form-control:read-only {
+        background-color: darkgrey !important;
+        border-color: darkgray !important;
+    }
+}
+

@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: GamesRepository::class)]
@@ -27,7 +28,7 @@ class Games
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $releaseDate = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $discordLink = null;
 
     #[ORM\Column(length: 255)]
@@ -95,7 +96,7 @@ class Games
         return $this->discordLink;
     }
 
-    public function setDiscordLink(string $discordLink): static
+    public function setDiscordLink(?string $discordLink): static
     {
         $this->discordLink = $discordLink;
 
@@ -121,6 +122,7 @@ class Games
 
     public function setRewrite(string $rewrite): static
     {
+
         $this->rewrite = $rewrite;
 
         return $this;

@@ -19,9 +19,18 @@ export default class extends Controller {
         let input = document.querySelector('#search_search');
 
         input.addEventListener('input' , this.debounce(async function (e) {
-
             //Set formdata
             let formData = new FormData(form);
+
+            //TODO NOTION pour console log un formdata console.log(Object.fromEntries(formData));
+
+
+            let resultsDiv = document.querySelector('#searchResults');
+            resultsDiv.classList.remove('visually-hidden');
+
+            resultsDiv.innerHTML = '<div id="loader" class="d-flex justify-content-center"> <div class="spinner-border text-white" role="status">' +
+                '<span class="visually-hidden">Loading...</span>' +
+                '</div></div>';
 
             try{
 
@@ -33,33 +42,24 @@ export default class extends Controller {
 
                 if (response.ok === true){
                     const data = await response.json();
-                    /*console.log(data)
-                    console.log(data['games'][0].name)*/
 
-                    let resultsDiv = document.querySelector('#searchResults');
 
-                    resultsDiv.innerHTML = "";
-
-                    if (data.games.length > 0) {
-                        resultsDiv.innerHTML += "<p>Games</p>";
-                    }
-                    for (const result in data.games){
-                        resultsDiv.innerHTML += "<a href='/games/"+data.games[result].rewrite +"'>" +
-                            "<p>"+ data.games[result].name +"</p>" +
-                            "<p>"+ data.games[result].image +"</p>" +
-                            "<p>"+ data.games[result].rewrite +"</p>" +
-                            "<p>"+ data.games[result].releaseDate +"</p>" +
-                            "</a>"
+                    if (data.games === ""){
+                        //If no result hide results div
+                        resultsDiv.classList.add('visually-hidden');
+                    }else{
+                        //Show Games results
+                        resultsDiv.innerHTML = data.games;
                     }
 
-                    if (data.players.length > 0) {
+                    /*if (data.players.length > 0) {
                         resultsDiv.innerHTML += "<p>Players</p>";
                     }
                     for (const result in data.players){
                         resultsDiv.innerHTML += "<a href=''>" +
                             "<p>"+ data.players[result].username +"</p>" +
                             "</a>"
-                    }
+                    }*/
 
                 }else{
                     console.error('Status error')

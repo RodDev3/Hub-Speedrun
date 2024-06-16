@@ -1,35 +1,79 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Runs index{% endblock %}
+{% block title %}Runs Verifications - {{ game.name }} - Hub Speedrun{% endblock %}
 
 {% block body %}
-    <h1>Runs index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Uuid</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for run in runs %}
-            <tr>
-                <td>{{ run.id }}</td>
-                <td>{{ run.uuid }}</td>
-                <td>
-                    {#<a href="{{ path('app_runs_show', {'id': run.id}) }}">show</a>
-                    <a href="{{ path('app_runs_edit', {'id': run.id}) }}">edit</a>#}
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {{ include('games/includes/cardGame.html.twig') }}
 
-    {#<a href="{{ path('app_runs_new') }}">Create new</a>#}
+    <div class="container mt-4">
+
+        <table id="tableVerif" class="table" {{ stimulus_controller('linkLeaderboard') }}>
+            <thead>
+                <tr>
+                    <th>Runner</th>
+                    <th>Categories</th>
+                    <th>Times</th>
+                    <th>Submission date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for run in runs %}
+                    <tr class="rowLeaderboard"
+                        data-href="{{ path('app_runs_verification', {'rewrite' : game.rewrite, 'uuid' : run.uuid} ) }}">
+                        <td class="align-middle">
+                            {% for user in run.getRefUsers %}
+                                {% if loop.first %}
+                                    {{ user.username }}
+                                {% else %}
+                                    · {{ user.username }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td id="categories" class="align-middle">
+                            <span>{{ run.refCategories().getName() }}</span> <br>
+                            <span class="subCategories">
+                                {% for subCategorie in run.refCategories.subCategories %}
+                                    {% if loop.first %}
+                                        {% if run.getDataFromField(subCategorie) is not null %}
+                                            {{ run.getDataFromField(subCategorie).data }}
+                                        {% else %}
+                                            ---
+                                        {% endif %}
+                                    {% else %}
+                                        {% if run.getDataFromField(subCategorie) is not null %}
+
+                                            · {{ run.getDataFromField(subCategorie).data }}
+                                        {% else %}
+                                            ---
+                                        {% endif %}
+
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                        </td>
+                        <td class="align-middle">
+                            {% set primaryComparison = run.refCategories.primaryComparison %}
+                            {% set secondaryComparison = run.refCategories.secondaryComparison %}
+                            <span>{{ primaryComparison.config['label'] }} {{ run.primaryComparisonData(primaryComparison).data | formatTimer }}</span>
+                            <br>
+
+                            {% if secondaryComparison is not null %}
+                                {% if run.secondaryComparisonData(secondaryComparison) is not null %}
+                                    <span>{{ secondaryComparison.config['label'] }} {{ run.secondaryComparisonData(secondaryComparison).data | formatTimer }}</span>
+                                {% else %}
+                                    <span>---</span>
+                                {% endif %}
+                            {% endif %}
+
+                        </td>
+                        <td class="align-middle">
+                            <span>{{ run.dateSubmitted | date('Y-m-d') }}</span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 {% endblock %}

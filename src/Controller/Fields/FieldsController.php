@@ -6,6 +6,7 @@ use App\Entity\Categories\Categories;
 use App\Entity\Fields\Fields;
 use App\Form\Fields\FieldsType;
 use App\Repository\Fields\FieldsRepository;
+use App\Service\BootService\BootService;
 use App\Service\Fields\FieldsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Container\ContainerInterface;
@@ -21,6 +22,7 @@ class FieldsController extends AbstractController
     public function __construct(
         private FieldsService $fieldsService,
         private EntityManagerInterface $entityManager,
+        private BootService       $bootService,
     ){}
 
     #[Route('/', name: 'app_fields_index', methods: ['GET'])]

@@ -8,21 +8,48 @@ use App\Entity\Roles\Roles;
 use App\Entity\Users\Users;
 use App\Form\Moderations\ModerationsType;
 use App\Repository\Moderations\ModerationsRepository;
+use App\Service\BootService\BootService;
+use App\Service\Security\SecurityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Twig\Environment;
+use function PHPUnit\Framework\identicalTo;
 
 #[Route('/{rewrite}/moderations')]
 class ModerationsController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager) {}
+    public function __construct(
+        private readonly Environment            $twig,
+        private readonly EntityManagerInterface $entityManager,
+        private BootService                     $bootService
+    )
+    {
+        new SecurityService($this->twig, $this->entityManager);
+    }
 
     #[Route('/', name: 'app_moderations_index', methods: ['GET'])]
     public function index(Games $game): Response
     {
+
+        //Check user role and redirect if not allowed
+        /** @var Users $user */
+        $user = $this->getUser();
+        if (!$user instanceof Users){
+            return $this->redirectToRoute('app_games_show', ['rewrite' => $game->getRewrite()]);
+        }
+        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+            if ($user->getModerationRolesFromGames($game) !== null) {
+                if ($user->getModerationRolesFromGames($game)->getRankOrder() > ROLE_SMOD_RANK) {
+                    return $this->redirectToRoute('app_games_show', ['rewrite' => $game->getRewrite()]);
+                }
+            } else {
+                return $this->redirectToRoute('app_games_show', ['rewrite' => $game->getRewrite()]);
+            }
+        }
 
         // TODO si game existe pas
         $roles = $this->entityManager->getRepository(Roles::class)->findBy([], ['rankOrder' => 'ASC']);
@@ -43,48 +70,14 @@ class ModerationsController extends AbstractController
         return $this->render('moderations/index.html.twig', [
             'moderations' => $moderations,
             'form' => $form->createView(),
-            "game" => $game
+            "game" => $game,
+            'breadcrumb' => [
+                'Home' => $this->generateUrl('app_home'),
+                $game->getName() => $this->generateUrl('app_games_show', ['rewrite' => $game->getRewrite()]),
+                'Moderation' => $this->generateUrl('app_moderations_index', ['rewrite' => $game->getRewrite()])
+            ],
         ]);
     }
-
-    #[Route('/call/user', name: 'app_moderations_call_user', methods: ['POST'])]
-    public function callManageUsers(Games $game, Request $request): JsonResponse
-    {
-
-        $requestModerations = $request->request->all('moderations');
-        /*$request->request->get("moderations")['refUsers']; // users
-        $request->request->get("moderations_refgames"); // game*/
-
-
-        //TODO VErif
-        $user = $this->entityManager->getRepository(Users::class)->find(
-            $requestModerations['refUsers']
-        );
-
-
-        $moderation = $this->entityManager->getRepository(Moderations::class)->findOneBy([
-            "refGames" => $game,
-            "refUsers" => $user
-        ]);
-
-
-        if ($moderation instanceof Moderations) {
-            $moderation->setRefRoles($moderation->getRefRoles());
-        } else {
-            $moderation = new Moderations();
-        }
-
-        $form = $this->createForm(ModerationsType::class, $moderation, ['game' => $game]);
-
-        return new JsonResponse(
-            [
-                "twigTemplate" => $this->renderView('moderations/ajax.html.twig', [
-                    'form' => $form->createView(),
-                ])
-            ]
-        );
-    }
-
 
 
     #[Route('/new', name: 'app_moderations_moderations_new', methods: ['GET', 'POST'])]
@@ -136,7 +129,7 @@ class ModerationsController extends AbstractController
     #[Route('/{id}', name: 'app_moderations_moderations_delete', methods: ['POST'])]
     public function delete(Request $request, Moderations $moderation, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$moderation->getId(), $request->getPayload()->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $moderation->getId(), $request->getPayload()->get('_token'))) {
             $entityManager->remove($moderation);
             $entityManager->flush();
         }

@@ -9,6 +9,15 @@ export default class extends Controller {
         this.categories = this.element.querySelectorAll(".categories");
         this.gameRewrite = window.location.href.split("/").slice(-1);
 
+
+        if (this.categories.length !== 0) {
+            window.addEventListener("load", (e) => {
+                    e.preventDefault();
+                    this.applyCategories(e, this.categories[0]);
+                }
+            );
+        }
+
         this.categories.forEach((category) => {
             category.addEventListener("click", (e) => {
                 this.applyCategories(e, category);
@@ -20,6 +29,17 @@ export default class extends Controller {
     async applyCategories(e, category) {
         e.preventDefault();
 
+        let oldActive = document.querySelector('.categories.active');
+        if (oldActive !== null){
+            oldActive.classList.remove('active');
+        }
+        category.classList.add('active');
+
+        this.leaderboard.innerHTML = '<div id="loader" class="mt-4"> <div class="spinner-border text-white" role="status">' +
+            '<span class="visually-hidden">Loading...</span>' +
+            "</div></div>";
+
+
         let response = await fetch("/game/call/categories", {
             method: "POST",
             body: JSON.stringify({
@@ -30,7 +50,7 @@ export default class extends Controller {
 
         let data = await response.json();
         if (response.status === 200) {
-            console.log(data);
+
             this.leaderboard.innerHTML = data;
 
             let categories = document.querySelector("#subCategoriesWrapper");
@@ -50,23 +70,35 @@ export default class extends Controller {
         let dataForm = null;
         let value = null;
 
+
         if (category === undefined) {
             //From subCategories button
 
+            //loader
+            let divRuns = document.querySelector("#runs");
+            divRuns.innerHTML = "<div id=\"loader\" class=\"mt-4 d-flex justify-content-center\"> <div class=\"spinner-border text-white\" role=\"status\">" +
+                "<span class=\"visually-hidden\">Loading...</span>" +
+                "</div></div>";
+
             //Build du json pour l'envoie
             dataForm = [];
-            let subCategories = document.querySelectorAll('.subCategories');
-            dataForm = {'uuid' : subCategories[0].getAttribute('data-item-category-param'), 'subCategory' : {}};
+            let subCategories = document.querySelectorAll(".subCategories");
+            dataForm = {"uuid": subCategories[0].getAttribute("data-item-category-param"), "subCategory": {}};
 
             subCategories.forEach((subCategory, index) => {
-                let key = subCategory.getAttribute('data-item-label-param');
+                let key = subCategory.getAttribute("data-item-label-param");
                 dataForm.subCategory[key] = subCategory.value;
 
             });
 
         } else {
             //From categories Button
-            dataForm = {'uuid' : category.getAttribute("data-categories"), 'subCategory' : null};
+
+            this.leaderboard.insertAdjacentHTML("beforeend", "<div id=\"loader\" class=\"mt-4 d-flex justify-content-center\"> <div class=\"spinner-border text-white\" role=\"status\">" +
+                "<span class=\"visually-hidden\">Loading...</span>" +
+                "</div></div>");
+
+            dataForm = {"uuid": category.getAttribute("data-categories"), "subCategory": null};
         }
 
 
@@ -77,13 +109,15 @@ export default class extends Controller {
 
         let data = await response.json();
         if (response.status === 200) {
-            //TODO Add loader
 
             if (category === undefined) {
-                let divRuns = document.querySelector('#runs');
+                let divRuns = document.querySelector("#runs");
+                document.querySelector("#loader").remove();
+
                 divRuns.innerHTML = data;
-            }else{
-                this.leaderboard.insertAdjacentHTML('beforeend', data);
+            } else {
+                document.querySelector("#loader").remove();
+                this.leaderboard.insertAdjacentHTML("beforeend", data);
             }
 
         } else {

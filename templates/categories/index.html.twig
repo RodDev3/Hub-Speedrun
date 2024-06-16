@@ -1,40 +1,41 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Categories index{% endblock %}
+{% block title %}Categories - {{ game.name }} - Hub Speedrun{% endblock %}
 
 {% block body %}
-    <h1>{{ game.name }}'s Categories</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Rules</th>
-                <th>Players</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for category in categories %}
-            <tr>
-                <td>{{ category.id }}</td>
-                <td>{{ category.name }}</td>
-                <td>{{ category.rules }}</td>
-                <td>{{ category.players }}</td>
-                <td>
-                    <a href="{{ path('app_categories_show', {'id': category.id, 'rewrite' : game.rewrite}) }}">show</a>
-                    <a href="{{ path('app_categories_edit', {'id': category.id, 'rewrite' : game.rewrite}) }}">edit</a>
-                    <a href="{{ path('app_runs_submit', {'rewrite' : game.rewrite }) }}">Submit run</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {{ include('games/includes/cardGame.html.twig') }}
 
-    <a href="{{ path('app_categories_new', {'rewrite' : game.rewrite}) }}">Create new</a>
+    <div class="container mt-4 ">
+        {# Style in _verification.scss #}
+        <div class="d-flex justify-content-end mb-3">
+            <a class="btn btn-validation" href="{{ path('app_categories_new', {'rewrite' : game.rewrite}) }}">Create new</a>
+        </div>
+
+        <table id="tableCategories" class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                    <tr class="rowLeaderboard noPointer">
+                        <td>{{ category.name }}</td>
+                        <td class="text-center">
+                            <a class="btn btn-primary" href="{{ path('app_categories_edit', {'uuid': category.uuid, 'rewrite' : game.rewrite}) }}">Edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">no categories found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+
 {% endblock %}

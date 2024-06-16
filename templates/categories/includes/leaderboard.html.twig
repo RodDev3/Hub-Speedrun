@@ -1,107 +1,136 @@
 <div id="runs">
-    Runs
-    <table>
-        <tr>
-            <th>#</th>
-            <th>
-                {% if category.players > 1 %}
-                    Players
-                {% else %}
-                    Player
-                {% endif %}
-            </th>
-            <th>
-                {{ category.primaryComparison.config['label'] }}
-            </th>
-            {% if category.secondaryComparison is not null %}
-                <th>
-                    {{ category.secondaryComparison.config['label'] }}
-                </th>
-            {% endif %}
-            {% for field in category.getConfigLeaderboard %}
-                <th>
-                    {{ field.config['label'] }}
-                </th>
-            {% endfor %}
-        </tr>
-
-        {# Pour comparaison d'égalité #}
-        {% set prevPrimary = '' %}
-        {% set prevSecondary = '' %}
-        {% set pointer = 1 %}
-
-        {% for run in runs %}
-
-            {% set primaryComparisonData = run.getPrimaryComparisonData(primaryComparison) %}
-            {% set secondaryComparisonData = run.getSecondaryComparisonData(secondaryComparison) %}
-
-            <tr>
-                <td>
-                    {% if secondaryComparison is not null %}
-                        {% if primaryComparisonData.data is same as prevPrimary and secondaryComparisonData.data is same as prevSecondary %}
-                            -
+    {% if runs|length == 0 %}
+        <div class="w-100 mt-4 text-center">
+            No runs submitted
+        </div>
+    {% else %}
+        <table id="leaderboard" {{ stimulus_controller('linkLeaderboard') }} class="w-100 mt-4">
+            <thead>
+                <tr>
+                    <th class="position text-center">#</th>
+                    <th class="">
+                        {% if category.players > 1 %}
+                            Players
                         {% else %}
-                            {{ pointer }}
+                            Player
                         {% endif %}
-                    {% else %}
-                        {% if primaryComparisonData.data is same as prevPrimary %}
-                            -
-                        {% else %}
-                            {{ pointer }}
-                        {% endif %}
+                    </th>
+                    <th class="text-center">
+                        {{ category.primaryComparison.config['label'] }}
+                    </th>
+                    {% if category.secondaryComparison is not null %}
+                        <th class="text-center">
+                            {{ category.secondaryComparison.config['label'] }}
+                        </th>
                     {% endif %}
-                </td>
+                    {% for field in category.getConfigLeaderboard %}
+                        <th class="text-center">
+                            {{ field.config['label'] }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
 
-                <td>
-                    <div class="players">
-                        {% for player in run.refUsers %}
-                            <p>{{ player.username }}</p>
-                        {% endfor %}
-                    </div>
-                </td>
-                <td>
+            {# Pour comparaison d'égalité #}
+            {% set prevPrimary = '' %}
+            {% set prevSecondary = '' %}
+            {% set pointer = 1 %}
 
-                    <div class="primaryComparison">
-                        {# TODO CONDITION SI NUMBER COMPARISON #}
+            {% for run in runs %}
 
-                        {% if primaryComparisonData is not null %}
-                            {{ primaryComparisonData.data | formatTimer }}
-                        {% else %}
-                            {# TODO RETIRER CE ELSE CAR PAS POSSIBLE NORMALEMENT #}
-                            No data available
-                        {% endif %}
-                    </div>
-                </td>
-                <td>
+                {% set primaryComparisonData = run.getPrimaryComparisonData(primaryComparison) %}
+                {% if secondaryComparison is not null %}
+                    {% set secondaryComparisonData = run.getSecondaryComparisonData(secondaryComparison) %}
+                {% endif %}
 
-                    <div class="">
+                <tr class="rowLeaderboard"
+                    data-href="{{ path('app_runs_show', {'rewrite': category.refGames.rewrite, 'uuid' : run.uuid}) }}">
+                    <td class="position text-center">
                         {% if secondaryComparison is not null %}
-                            {% if secondaryComparisonData is not null %}
-                                {{ secondaryComparisonData.data | formatTimer }}
+                            {% if primaryComparisonData.data is same as prevPrimary %}
+                                {% if secondaryComparisonData is not null %}
+                                    {% if secondaryComparisonData.data is same as prevSecondary %}
+                                        -
+                                    {% else %}
+                                        {{ pointer }}
+                                    {% endif %}
+                                {% else %}
+                                    {% if prevSecondary is same as null %}
+                                        -
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                {% endif %}
                             {% else %}
-                                {# TODO RETIRER CE ELSE CAR PAS POSSIBLE NORMALEMENT #}
-                                No data available
+                                {{ pointer }}
+                            {% endif %}
+                        {% else %}
+                            {% if primaryComparisonData.data is same as prevPrimary %}
+                                -
+                            {% else %}
+                                {{ pointer }}
                             {% endif %}
                         {% endif %}
-                    </div>
-                </td>
-                {% for categoryField in configFields %}
-                    <td>
-                        {% set fieldData = run.getDataFromField(categoryField) %}
-                        {% if fieldData is not null %}
-                            {{ fieldData.getData() }}
-                        {% else %}
-                            ---
-                        {% endif %}
                     </td>
-                {% endfor %}
-            </tr>
 
-            {% if secondaryComparison is not null %}
-                {% set prevSecondary = secondaryComparisonData.data %}
-            {% endif %}
-            {% set prevPrimary = primaryComparisonData.data %}
-            {% set pointer = pointer+1 %}
-        {% endfor %}
-    </table>
+                    <td>
+                        <div class="players">
+                            {% for player in run.refUsers %}
+                                {% if loop.first %}
+                                    {{ player.username }}
+                                {% else %}
+                                    · {{ player.username }}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td>
+
+                        <div class="primaryComparison text-center">
+                            {# TODO CONDITION SI NUMBER COMPARISON #}
+
+                            {% if primaryComparisonData is not null %}
+                                {{ primaryComparisonData.data | formatTimer }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+
+                        <div class="text-center">
+                            {% if secondaryComparison is not null %}
+                                {% if secondaryComparisonData is not null %}
+                                    {{ secondaryComparisonData.data | formatTimer }}
+                                {% else %}
+                                    {# TODO RETIRER CE ELSE CAR PAS POSSIBLE NORMALEMENT #}
+                                    ---
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                    {% for categoryField in configFields %}
+                        <td class="text-center">
+                            {% set fieldData = run.getDataFromField(categoryField) %}
+                            {% if fieldData is not null %}
+                                {{ fieldData.getData() }}
+                            {% else %}
+                                ---
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+
+                {% if secondaryComparison is not null %}
+                    {% if secondaryComparisonData is not null %}
+                        {% set prevSecondary = secondaryComparisonData.data %}
+                    {% else %}
+                        {% set prevSecondary = null %}
+                    {% endif %}
+                {% endif %}
+                {% set prevPrimary = primaryComparisonData.data %}
+                {% set pointer = pointer+1 %}
+            {% endfor %}
+        </table>
+    {% endif %}
 </div>

@@ -22,13 +22,17 @@ class ModerationsType extends AbstractType
             ->add('refUsers', EntityType::class, [
                 'attr' => ['class' => 'form-control'],
                 'class' => Users::class,
+                'placeholder' => 'Select a user',
                 'choice_label' => 'username',
+                'label' => 'User'
             ])
             ->add('refRoles', EntityType::class, [
                 'attr' => ['class' => 'form-control'],
                 'class' => Roles::class,
+                'placeholder' => '- - -',
                 'choice_label' => 'name',
-                'autocomplete' => true
+                'label' => 'Role',
+                'autocomplete' => true,
             ])
             ->add('refGames', HiddenType::class, [
                 'data' => $options['game']->getUuid(),

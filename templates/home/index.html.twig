@@ -1,15 +1,40 @@
 {% extends '/base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Hub Speedrun{% endblock %}
 
 {% block body %}
-    <div class="searchBar-Wrapper" {{ stimulus_controller('search') }}>
-        {{ form_start(searchBar , {'attr' : {'id' : 'formSearch'}}) }}
 
-        {{ form_label(searchBar.search) }}
-        {{ form_widget(searchBar.search) }}
+    <div class="container">
+        <div class="d-flex justify-content-center">
+            <h1 class="h1Home"><span class="w-100 d-flex justify-content-center">Hub</span><span>Speedrun</span></h1>
+        </div>
 
-        {{ form_end(searchBar) }}
+        <div class="searchBar-Wrapper d-flex justify-content-center" {{ stimulus_controller('search') }}>
+            {{ form_start(searchBar , {'attr' : {'id' : 'formSearch'}}) }}
+
+            <div class="form-floating mt-4">
+                {{ form_widget(searchBar.search) }}
+                {{ form_label(searchBar.search) }}
+            </div>
+
+            {{ form_end(searchBar) }}
+        </div>
+        <div id="searchResults" class="visually-hidden"></div>
+
+        {% if USER is defined and USER is not null and 'ROLE_ADMIN' in USER.roles %}
+
+            <div id="adminActionWrapper" class="d-flex justify-content-center">
+
+                <div id="adminActions" class="mt-3 d-flex justify-content-evenly flex-wrap row-gap-2">
+                    <a href="{{ path('app_games_index') }}" class="btn btn-primary">Manage Games</a>
+
+                    <a class="btn btn-primary" href="{{ path('app_supports_index') }}">Manage Supports</a>
+
+                    {# Copie de roles pour games mais pour les Admins #}
+                    <a href="{{ path('app_admin_manage') }}" class="btn btn-primary">Manage Admins</a>
+                </div>
+            </div>
+
+        {% endif %}
     </div>
-    <div id="searchResults"></div>
 {% endblock %}

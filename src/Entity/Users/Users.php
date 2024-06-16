@@ -47,10 +47,14 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
+    #[ORM\OneToMany(targetEntity: Runs::class, mappedBy: 'verifiedBy')]
+    private Collection $runsVerified;
+
     public function __construct()
     {
         $this->refModerations = new ArrayCollection();
         $this->refRuns = new ArrayCollection();
+        $this->runsVerified = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -205,5 +209,35 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->getRefModerations()->matching($criteria);
 
         return $roles->isEmpty() ? null : $roles->first()->getRefRoles();
+    }
+
+    /**
+     * @return Collection<int, Runs>
+     */
+    public function getRunsVerified(): Collection
+    {
+        return $this->runsVerified;
+    }
+
+    public function addRunsVerified(Runs $runsVerified): static
+    {
+        if (!$this->runsVerified->contains($runsVerified)) {
+            $this->runsVerified->add($runsVerified);
+            $runsVerified->setVerifiedBy($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRunsVerified(Runs $runsVerified): static
+    {
+        if ($this->runsVerified->removeElement($runsVerified)) {
+            // set the owning side to null (unless already changed)
+            if ($runsVerified->getVerifiedBy() === $this) {
+                $runsVerified->setVerifiedBy(null);
+            }
+        }
+
+        return $this;
     }
 }

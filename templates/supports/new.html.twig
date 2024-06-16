@@ -1,11 +1,13 @@
-{% extends '../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}New Supports{% endblock %}
+{% block title %}New Support - Hub Speedrun{% endblock %}
 
 {% block body %}
-    <h1>Create new Supports</h1>
 
-    {{ include('supports/supports/_form.html.twig') }}
+    <div class="container mt-5">
+        <h1>New Support</h1>
 
-    <a href="{{ path('app_supports_supports_index') }}">back to list</a>
+            {{ include('supports/_form.html.twig') }}
+    </div>
+
 {% endblock %}

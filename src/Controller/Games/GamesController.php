@@ -7,6 +7,7 @@ use App\Entity\Users\Users;
 use App\Form\Games\Games1Type;
 use App\Form\Games\GamesType;
 use App\Repository\Games\GamesRepository;
+use App\Service\BootService\BootService;
 use App\Service\Security\SecurityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,7 @@ class GamesController extends AbstractController
     public function __construct(
         private Environment $twig,
         private EntityManagerInterface $entityManager,
+        private BootService       $bootService,
     )
     {
         new SecurityService($this->twig, $this->entityManager);
@@ -32,29 +34,49 @@ class GamesController extends AbstractController
     #[Route('/', name: 'app_games_index', methods: ['GET'])]
     public function index(GamesRepository $gamesRepository): Response
     {
+        //Check user role and redirect if not allowed
+        /** @var Users $user */
+        $user = $this->getUser();
+        if (!$user instanceof Users){
+            return $this->redirectToRoute('app_home');
+        }
+        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+            return $this->redirectToRoute('app_home');
+        }
+
         return $this->render('games/index.html.twig', [
             'games' => $gamesRepository->findAll(),
+            'breadcrumb' => [
+                'Home' => $this->generateUrl('app_home'),
+                'Games List' => $this->generateUrl('app_games_index'),
+            ],
         ]);
     }
 
     #[Route('/new', name: 'app_games_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        //Check user role and redirect if not allowed
+        /** @var Users $user */
+        $user = $this->getUser();
+        if (!$user instanceof Users){
+            return $this->redirectToRoute('app_home');
+        }
+        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+            return $this->redirectToRoute('app_home');
+        }
+
         $game = new Games();
         $form = $this->createForm(GamesType::class, $game);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $game->setUuid(Uuid::v4());
-            $entityManager->persist($game);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_games_index', [], Response::HTTP_SEE_OTHER);
-        }
 
         return $this->render('games/new.html.twig', [
             'game' => $game,
             'form' => $form,
+            'breadcrumb' => [
+                'Home' => $this->generateUrl('app_home'),
+                'Games List' => $this->generateUrl('app_games_index'),
+                'New Game' => $this->generateUrl('app_games_new'),
+            ],
         ]);
     }
 
@@ -62,43 +84,50 @@ class GamesController extends AbstractController
     public function show(Games $game): Response
     {
 
-
         /** @var Users $user */
         $user =$this->getUser();
 
         return $this->render('games/show.html.twig', [
             'game' => $game,
             'user' => $user,
+            'breadcrumb' => [
+                'Home' => $this->generateUrl('app_home'),
+                $game->getName() => $this->generateUrl('app_games_show', ['rewrite' => $game->getRewrite()])
+            ],
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_games_edit', methods: ['GET', 'POST'])]
+    #[Route('/{uuid}/edit', name: 'app_games_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Games $game, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(GamesType::class, $game);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_games_index', [], Response::HTTP_SEE_OTHER);
+        //Check user role and redirect if not allowed
+        /** @var Users $user */
+        $user = $this->getUser();
+        if (!$user instanceof Users){
+            return $this->redirectToRoute('app_home');
         }
+        if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+            if ($user->getModerationRolesFromGames($game) !== null) {
+                if ($user->getModerationRolesFromGames($game)->getRankOrder() > ROLE_MOD_RANK) {
+                    return $this->redirectToRoute('app_home');
+                }
+            } else {
+                return $this->redirectToRoute('app_home');
+            }
+        }
+
+        $form = $this->createForm(GamesType::class, $game);
+        //$form->handleRequest($request);
 
         return $this->render('games/edit.html.twig', [
             'game' => $game,
             'form' => $form,
+            'breadcrumb' => [
+                'Home' => $this->generateUrl('app_home'),
+                'Games List' => $this->generateUrl('app_games_index'),
+                'Update ' . $game->getName() => $this->generateUrl('app_games_edit' ,['uuid' => $game->getUuid()]),
+            ],
         ]);
     }
 
-    #[Route('/{id}', name: 'app_games_games_delete', methods: ['POST'])]
-    public function delete(Request $request, Games $game, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$game->getId(), $request->getPayload()->get('_token'))) {
-            $entityManager->remove($game);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_games_index', [], Response::HTTP_SEE_OTHER);
-    }
 }

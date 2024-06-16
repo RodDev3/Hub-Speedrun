@@ -1,4 +1,43 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<div class="mt-4" {% if game.uuid is not null %} data-forms-uuid-value="{{ game.uuid }}" {% endif %} {{ stimulus_controller('forms') }}>
+
+
+    {{ form_start(form , {'attr' : stimulus_action('forms', 'gameForm').toArray() } ) }}
+
+
+    <div class="row mt-3">
+        <div class="col-12 col-md-6">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_label(form.image) }}
+            {{ form_widget(form.image) }}
+        </div>
+    </div>
+
+
+
+    <div class="row mt-3">
+        <div class="col-12 col-md-6">
+            {{ form_label(form.releaseDate) }}
+            {{ form_widget(form.releaseDate) }}
+        </div>
+        <div class="col-12 col-md-6">
+            {{ form_label(form.discordLink) }}
+            {{ form_widget(form.discordLink) }}
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            {{ form_label(form.refSupports) }}
+            {{ form_widget(form.refSupports) }}
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-validation">{{ button_label|default('Save') }}</button>
+    </div>
+
+    {{ form_end(form, {render_rest : false}) }}
+</div>

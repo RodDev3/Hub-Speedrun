@@ -1,9 +1,118 @@
 @import "~bootstrap/scss/bootstrap";
-
-@import "Search/_search.scss";
-
 @import "~toastr/toastr";
 
+@import "Search/_search.scss";
+@import "Leaderboard/_leaderboard.scss";
+@import "Games/_games.scss";
+@import "navbar/_navbar.scss";
+@import "modal/_modal.scss";
+@import "Runs/_verification.scss";
+@import "Runs/_general.scss";
+@import "forms/_general.scss";
+@import "forms/_category.scss";
+@import "breadcrumb/_breadcrumb.scss";
+@import "footer/_footer.scss";
+@import "vars.scss";
+@import "font.scss";
+
 body {
-    background-color: lightgray;
+    background-color: $color1;
+    color: white;
+    position: relative;
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+.btn-primary{
+    background: $color4;
+    border-color: $color4;
+    color: white;
+    &:hover{
+        border-color: white;
+        color: $color2 !important;
+        background: white !important;
+    }
+}
+
+.btn-validation{
+
+    background-color: #51a351;
+    border: 2px solid #51a351;
+    color: white;
+    font-weight: 600;
+    &:hover{
+        background-color: transparent;
+        font-weight: 600;
+        border: 2px solid #51a351;
+        color: #51a351;
+    }
+}
+
+.btn-delete{
+    background-color: #bd362f;
+    border: 2px solid #bd362f;
+    color: white;
+    font-weight: 600;
+    &:hover{
+        background-color: transparent;
+        font-weight: 600;
+        border: 2px solid #bd362f;
+        color: #bd362f;
+    }
+}
+.btn-outline-secondary, .btn-outline-secondary:active {
+    background-color: transparent !important;
+    border: 2px solid white !important;
+    border-left: none !important;
+    color: white !important;
+    &:hover{
+        background-color: white !important;
+        border: 2px solid white !important;
+        border-left: none !important;
+        color: $color1 !important;
+    }
+}
+.btn-outline-delete, .btn-outline-delete:active{
+    background-color: transparent!important;
+    border: 2px solid #bd362f!important;
+    color: #bd362f!important;
+    font-weight: 600;
+    &:hover{
+        background-color: #bd362f!important;
+        font-weight: 600;
+        border: 2px solid #bd362f!important;
+        color: white!important;
+    }
+}
+
+a{
+    text-decoration: none;
+    color: white;
+}
+
+hr{
+    opacity: 1;
+}
+
+.help-text{
+    opacity: 0.5;
+    font-size: small;
+}
+
+/*.ts-wrapper{
+    padding-right: calc(var(--bs-gutter-x)* 0.5) !important;
+    padding-left: calc(var(--bs-gutter-x)* 0.5) !important;
+
+}*/
+
+.w-fit{
+    width: fit-content;
+}
+
+.alert {
+    margin-bottom: 0;
+}
+
+#adminActions{
+    width: 650px;
 }

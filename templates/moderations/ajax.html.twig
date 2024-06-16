@@ -1,4 +1,13 @@
-{{ form_widget(form.refRoles) }}
 {{ form_label(form.refRoles) }}
+{{ form_widget(form.refRoles) }}
 
-<button></button>
+<div class="d-flex {% if user is not null and user.getModerationRolesFromGames(game) is not null %} justify-content-between {% else %} justify-content-end {% endif%}  mt-4">
+    {% if user is not null %}
+
+        {% if user.getModerationRolesFromGames(game) is not null %}
+            <button {{ stimulus_action('manageUserModeration', 'delete')}} class="btn btn-delete">Delete</button>
+        {% endif %}
+    {% endif %}
+
+    <button {{ stimulus_action('manageUserModeration', 'applyChanges')}} class="btn btn-validation align-self-end">Apply changes</button>
+</div>

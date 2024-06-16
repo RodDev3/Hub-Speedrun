@@ -1,0 +1,16 @@
+@use '../vars.scss';
+
+#detailRun{
+    #primaryInfo,#times,#secondaryInfo,#player{
+        display: flex;
+        flex-direction: column;
+        row-gap: 15px;
+    }
+    .infoCard{
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(0, 0, 0, 0.4);
+        padding: 10px;
+        border-radius: 5px;
+    }
+}

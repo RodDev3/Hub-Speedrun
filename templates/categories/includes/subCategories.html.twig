@@ -1,14 +1,18 @@
-<div id="subCategoriesWrapper">
-    <form id="subCategoriesForm" name="subCategoriesForm">
+<div id="subCategoriesWrapper" class="mt-4">
+    <form id="subCategoriesForm" name="subCategoriesForm" class="d-flex">
         {% for subcategory in subCategories %}
-            <div class="labelOption"
-                 data-value="{{ subcategory.config['label'] }}">{{ subcategory.config['label'] }}</div>
-            {# {% if subcategory.config["options"] | length > 3 %} #}
-            <select name="" class="subCategories" id="" data-item-label-param="{{ subcategory.config['label'] }}" data-item-category-param="{{ category.uuid }}" {{ stimulus_action('leaderboard', 'loadRuns') }}>
-                {% for option in subcategory.config['options'] %}
-                    <option value="{{ option }}">{{ option }}</option>
-                {% endfor %}
-            </select>
+            <div>
+                <div class="labelOption"
+                     data-value="{{ subcategory.config['label'] }}">{{ subcategory.config['label'] }}</div>
+                {# {% if subcategory.config["options"] | length > 3 %} #}
+                <select name="" class="subCategories form-select w-fit" id=""
+                        data-item-label-param="{{ subcategory.config['label'] }}"
+                        data-item-category-param="{{ category.uuid }}" {{ stimulus_action('leaderboard', 'loadRuns') }}>
+                    {% for option in subcategory.config['options'] %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             {# {% else %}
             {% for option in subcategory.config['options'] %}
                 <button class="subCategories" value="{{ option }}" data-item-category-param="{{ category.uuid }}" {{ stimulus_action('leaderboard','loadRuns') }}>{{ option }}</button>

@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Uid\Uuid;
+use function Symfony\Component\Clock\now;
 
 class RunsService extends AbstractController
 {
@@ -87,7 +88,12 @@ class RunsService extends AbstractController
 
                         $totalMilli += $times;
                     }
-                    
+
+
+                    if ($totalMilli <= 0){
+                        return new JsonResponse(['message' => 'Please entered a valid ' . $field->getConfig()['label'] . ' time'], 400);
+                    }
+
                     $fieldData = new FieldData($field, $runs, $totalMilli);
 
                     $this->entityManager->persist($fieldData);
@@ -108,14 +114,90 @@ class RunsService extends AbstractController
             }
         }
 
+        //if user set date in the future
+        if ($runs->getDateMade() > now()){
+            return new JsonResponse(['message' => 'Invalid date'],400);
+        }
+
+        //check video mandatory
+        if ($runs->getRefCategories()->isVideoMandatory()){
+            if ($runs->getVideo() === null){
+                return new JsonResponse(['message' => 'Please fill the video url'], 400);
+            }
+        }
+
         //Set pending
         $runs->setRefStatus($this->entityManager->getRepository(Status::class)->find(1));
+        $runs->setDateSubmitted(now());
+
+
 
         $this->entityManager->persist($runs);
 
+
         $this->entityManager->flush();
 
-        //TODO REDIRECT TO LEADERBOARD
-        return new JsonResponse(['message' => 'Run submitted !'], 200);
+        return new JsonResponse(['message' => 'Run submitted !' , 'redirect' => $this->generateUrl('app_games_show', ['rewrite' => $runs->getRefGame()->getRewrite()])], 200);
+    }
+
+    public function checkOldAndNewRun(Runs $run)
+    {
+        $subCategoriesValue = $run->getSubCategoriesData($run->getRefCategories());
+
+        //Les users de la run
+        $users = $run->getRefUsers();
+
+        //All runs active de la catégorie
+        $commonRunsCategory = $this->entityManager->getRepository(Runs::class)->findByUsersAndCategory($users, $run->getRefCategories());
+
+        $commonRunsSubCategories = [];
+
+        //Trie pour n'avoir que les runs qui match les sous catégorie
+        foreach ($commonRunsCategory as $runCategory){
+            if ($runCategory->getSubCategoriesData($runCategory->getRefCategories()) === $subCategoriesValue){
+                $commonRunsSubCategories[] = $runCategory;
+            }
+        }
+
+        if (count($commonRunsSubCategories) > 0){
+            //Il y a un pb existant
+            $prevRun = $commonRunsCategory[0];
+
+            $primaryField = $run->getRefCategories()->getPrimaryComparison();
+            $secondaryField = $run->getRefCategories()->getSecondaryComparison();
+
+
+            if ($run->getDataFromField($primaryField)->getData() === $prevRun->getDataFromField($primaryField)->getData()){
+                //same primary as pb
+                if ($secondaryField === null){
+                    //All same as pb but new pb
+                    $prevRun->setRefStatus($this->entityManager->getRepository(Status::class)->find(4));
+                    $run->setRefStatus($this->entityManager->getRepository(Status::class)->find(2));
+
+                }else{
+
+                    if ($run->getDataFromField($secondaryField)->getData() <= $prevRun->getDataFromField($secondaryField)->getData()){
+                        //Beat pb or same as pb so new pb
+                        $prevRun->setRefStatus($this->entityManager->getRepository(Status::class)->find(4));
+                        $run->setRefStatus($this->entityManager->getRepository(Status::class)->find(2));
+                    }else {
+                        //No beat pb so obsolete
+                        $run->setRefStatus($this->entityManager->getRepository(Status::class)->find(4));
+                    }
+
+                }
+            }else if ($run->getDataFromField($primaryField)->getData() > $prevRun->getDataFromField($primaryField)->getData()){
+                //not beat pb so obsolete
+                $run->setRefStatus($this->entityManager->getRepository(Status::class)->find(4));
+            }else{
+                //beat pb new pb
+                $prevRun->setRefStatus($this->entityManager->getRepository(Status::class)->find(4));
+                $run->setRefStatus($this->entityManager->getRepository(Status::class)->find(2));
+            }
+
+            $this->entityManager->persist($prevRun);
+        }else{
+            $run->setRefStatus($this->entityManager->getRepository(Status::class)->find(2));
+        }
     }
 }

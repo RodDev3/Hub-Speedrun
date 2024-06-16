@@ -1,0 +1,6 @@
+{% for game in games %}
+    <a class="searchGame w-100 d-flex align-items-center" href="{{ path('app_games_show', {'rewrite' : game.rewrite}) }}">
+        <img src="{{ game.image }}" alt="Image {{ game.name }}" width="45" height="65">
+        <span class="searchName">{{ game.name }} ({{ game.releaseDate }})</span>
+    </a>
+{% endfor %}

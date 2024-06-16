@@ -7,6 +7,7 @@ use App\Entity\FieldData\FieldData;
 use App\Entity\Fields\Fields;
 use App\Entity\FieldTypes\FieldTypes;
 use App\Entity\Runs\Runs;
+use App\Entity\Status\Status;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Uid\UuidV4;
+use function Composer\Autoload\includeFile;
 use function PHPUnit\Framework\isEmpty;
 
 class CategoriesService extends AbstractController
@@ -22,7 +25,7 @@ class CategoriesService extends AbstractController
 
 
     public function __construct(
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
     ) {}
 
 
@@ -34,9 +37,9 @@ class CategoriesService extends AbstractController
     public function categoriesValidation(Request $request, Categories $categories)
     {
 
-        $formData = $request->request->all();
 
-        //TODO VOIR SI JE PASSE SUR DU VALIDATOR
+        $formData = $request->request->all();
+        //dd($formData);
 
         //Vérification des données de la categories
         if ($categories->getName() === null) {
@@ -56,7 +59,13 @@ class CategoriesService extends AbstractController
             return new JsonResponse(['message' => 'Incorrect number of players'], 400);
         }
 
-        $categories->setUuid(Uuid::v4());
+        $create = false;
+        if ($categories->getUuid() === null){
+            $create = true;
+            $categories->setUuid(Uuid::v4());
+        }
+
+
         //Persist/flush la caté
         $this->entityManager->persist($categories);
 
@@ -67,25 +76,42 @@ class CategoriesService extends AbstractController
             $hasPrimary = false;
             $hasSecondary = false;
 
+
+
             //Vérification des données sur chaque nouveau champ
             foreach ($formData['categories']['fields'] as $key => $fieldData) {
 
-                $field = new Fields();
-                $field->setRefCategories($categories);
 
                 $explodedType = explode('.', $key);
                 $fieldType = $explodedType[0];
 
+                //dd($formData['categories']['fields']);
+                if ($create){
+                    //Cas création de catégorie
+                    $field = new Fields();
+                }else{
 
-                //TODO COMPLETER AVEC TOUS LES TYPES DE CHAMPS
+                    if (!UuidV4::isValid($explodedType[1])){
+                        //Cas Update : Ajout de field
+                        $field = new Fields();
+                    }else{
+                        $field = $this->entityManager->getRepository(Fields::class)->findOneBy(['uuid' => $explodedType[1]]);
+                    }
+                    if (!$field instanceof Fields){
+                        return new JsonResponse(['message' => 'An error occurred while adding field'], 400);
+                    }
+                    //Permet la suppression d'options désactivée ici
+                    /*else{
+                        $field->setConfig([]);
+                    }*/
+                }
+
+
+                $field->setRefCategories($categories);
+
                 switch ($fieldType) {
 
                     case 'time-goal':
-                        //TODO BOUGER CA DANS CATEGORIE =>
-                        //TODO primaryTiming !nullable ref vers fields
-                        //TODO secondaryTiming nullable ref vers fields
-                        //TODO ON GARDE LES GOALS (NOM A MODIFIER) pour les IGT non secondaire (IGT différent mais same place)
-                        //TODO à l'affichage du form dans la partie "Timing ou autre" afficher primaryTiming, secondary Timing et les autres qui n'affecte pas le classement
 
                         $isPrimary = false;
                         $isSecondary = false;
@@ -130,6 +156,9 @@ class CategoriesService extends AbstractController
                         if ($isPrimary && $isSecondary) {
                             return new JsonResponse(['message' => 'Please choose between primary and secondary'], 400);
                         }
+                        if ($isPrimary === false && $isSecondary === false ){
+                            return new JsonResponse(['message' => 'Please choose between primary and secondary'], 400);
+                        }
 
                         //Vérif sur le type de champ
                         $type = $this->entityManager->getRepository(FieldTypes::class)->findOneBy(['backName' => $fieldType]);
@@ -138,9 +167,6 @@ class CategoriesService extends AbstractController
                         }
                         $field->setRefFieldTypes($type);
 
-                        //TODO RETIRER CA JUSTE POUR TEST
-                        $field->setDisplay(true);
-                        $field->setQuickFilter(true);
                         $field->setRankOrder(1);
 
                         $this->entityManager->persist($field);
@@ -163,9 +189,27 @@ class CategoriesService extends AbstractController
                                         return new JsonResponse(['message' => "Please fill all options in the list"], 400);
                                     }
 
+                                    if (!$create){
+                                        //Cas update modification valeur de l'option
+                                        if (!isset($field->getConfig()["options"]) ){
+                                            dd($field);
+                                        }
+                                        if ($field->getConfig()["options"][$pointer] !== $data){
+
+                                            //Récupération de toutes les ayant la data modifiée
+                                            $runs = $this->entityManager->getRepository(Runs::class)->findByCategorieAndFieldAndData($categories, $field, $field->getConfig()["options"][$pointer]);
+                                            foreach ($runs as $run) {
+                                                //Modification de tous les fieldsdata et persist
+                                                $fieldata = $run->getDataFromField($field);
+                                                $fieldata->setData($data);
+                                                $this->entityManager->persist($fieldata);
+                                            }
+                                        }
+                                    }
                                     $options = array_merge($options, [$pointer => trim(htmlspecialchars($data))]);
                                     $pointer++;
                                     break;
+
                                 case 'label':
                                     if ($data === "") {
                                         return new JsonResponse(['message' => "Please fill the name of the list"], 400);
@@ -192,9 +236,6 @@ class CategoriesService extends AbstractController
                         }
                         $field->setRefFieldTypes($type);
 
-                        //TODO RETIRER CA JUSTE POUR TEST
-                        $field->setDisplay(true);
-                        $field->setQuickFilter(true);
                         $field->setRankOrder(1);
 
                         $this->entityManager->persist($field);
@@ -207,16 +248,12 @@ class CategoriesService extends AbstractController
                 return new JsonResponse(['message' => 'Please add/select a default timing method'], 400);
             }
             $this->entityManager->flush();
+        }else{
+            return new JsonResponse(['message' => 'Please add some field'], 400);
         }
 
+        return new JsonResponse(['message' => $categories->getName() . ($create ? ' created' : ' updated') , 'redirect' => $this->generateUrl('app_categories_index',['rewrite' => $categories->getRefGames()->getRewrite()])]);
 
-        return new JsonResponse(['message' => 'Everything is good']);
-
-        //TODO REDIRECT ?
-
-        /*return $this->redirectToRoute('app_categories_index', ['rewrite' => $rewrite], Response::HTTP_SEE_OTHER);*/
-
-        //TODO !!!!!!!!!!!!!!!!!!! UNE FOIS FINI ICI IL FAUT AFFICHER LE FORMULAIRE ET INSERER DES RUNS POUR LE LEADERBOARD
     }
 
     public function getFieldsFromCategory(Categories $category): JsonResponse
@@ -229,6 +266,7 @@ class CategoriesService extends AbstractController
             ]);
         }
 
+        //[times => [ tempaltes à la suite ] ]
         foreach ($category->getRefFields() as $key => $field) {
 
             //TODO VOIR POUR LE TRI
@@ -279,7 +317,11 @@ class CategoriesService extends AbstractController
     public function displayRunsByOptions(Categories $categories, array $options = null)
     {
 
-        $runs = $categories->getRefRuns()->toArray();
+        $criteria = Criteria::create();
+        $criteria->where(Criteria::expr()->eq('refStatus', $this->entityManager->getRepository(Status::class)->find($options['status'])));
+        $runs = $categories->getRefRuns()->matching($criteria);
+        $runs = $runs->toArray();
+
         //sort avec boucle options1 options2
         $subCategories = $categories->getSubCategories();
 
@@ -288,12 +330,18 @@ class CategoriesService extends AbstractController
 
             //Tous les champs doivent matcher pour être dans le tableau filter
             foreach ($subCategories as $subCategory) {
+                //Cas de modif de catégorie
+                if ($run->getDataFromField($subCategory) == null){
+                    return false;
+                }
                 if ($run->getDataFromField($subCategory)->getData() != $options[$subCategory->getConfig()['label']]) {
                     return false;
                 }
             }
             return true;
         });
+
+        $runs = $this->sortRunsByComparisons($runs);
 
         //Renvoie le template avec les infos
         $primaryComparisonField = $categories->getPrimaryComparison();
@@ -327,7 +375,7 @@ class CategoriesService extends AbstractController
 
         if (!empty($runs)) {
 
-            $categories = $runs[0]->getRefCategories();
+            $categories = reset($runs)->getRefCategories();
 
             $primaryComparisonField = $categories->getPrimaryComparison();
 
@@ -343,17 +391,28 @@ class CategoriesService extends AbstractController
                     if ($secondaryComparisonField === null) {
                         return 0;
                     }
-                    $secondaryA = $a->getSecondaryComparisonData($secondaryComparisonField)->getData();
-                    $secondaryB = $b->getSecondaryComparisonData($secondaryComparisonField)->getData();
+                    $secondaryA = $a->getSecondaryComparisonData($secondaryComparisonField);
+                    $secondaryB = $b->getSecondaryComparisonData($secondaryComparisonField);
 
                     if ($secondaryA === null && $secondaryB === null) {
                         return 0;
-                    } elseif ($secondaryA === null) {
+                    }elseif($secondaryA === null){
                         return 1;
-                    } elseif ($secondaryB === null) {
+                    }elseif($secondaryB === null){
+                        return -1;
+                    }
+
+                    $secondaryAData = $secondaryA->getData();
+                    $secondaryBData = $secondaryB->getData();
+
+                    if ($secondaryAData === null && $secondaryBData === null) {
+                        return 0;
+                    } elseif ($secondaryAData === null) {
+                        return 1;
+                    } elseif ($secondaryBData === null) {
                         return -1;
                     } else {
-                        return $secondaryA <=> $secondaryB;
+                        return $secondaryAData <=> $secondaryBData;
                     }
                 }
 

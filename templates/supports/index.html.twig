@@ -1,35 +1,39 @@
-{% extends '../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Supports index{% endblock %}
+{% block title %}List Supports{% endblock %}
 
 {% block body %}
-    <h1>Supports index</h1>
+    <div class="container mt-5">
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for support in supports %}
-            <tr>
-                <td>{{ support.id }}</td>
-                <td>{{ support.name }}</td>
-                <td>
-                    <a href="{{ path('app_supports_supports_show', {'id': support.id}) }}">show</a>
-                    <a href="{{ path('app_supports_supports_edit', {'id': support.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <h1>List Supports</h1>
 
-    <a href="{{ path('app_supports_supports_new') }}">Create new</a>
+        <div class="d-flex justify-content-end mt-4 mb-3">
+            <a class="btn-validation btn" href="{{ path('app_supports_new') }}">Create new</a>
+        </div>
+
+        <table id="tableCategories" class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for support in supports %}
+                    <tr class="rowLeaderboard noPointer">
+                        <td>{{ support.name }}</td>
+                        <td class="text-center">
+                            <a class="btn btn-primary" href="{{ path('app_supports_edit', {'id': support.id}) }}">Edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">no supports found</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
 {% endblock %}

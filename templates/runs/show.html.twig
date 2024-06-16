@@ -1,26 +1,138 @@
-{% extends '../base.html.twig' %}
+{% extends '/base.html.twig' %}
 
-{% block title %}Runs{% endblock %}
+{% block title %}Run Verification - {{ game.name }} - Hub Speedrun{% endblock %}
 
 {% block body %}
-    <h1>Runs</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ run.id }}</td>
-            </tr>
-            <tr>
-                <th>Uuid</th>
-                <td>{{ run.uuid }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {% include 'games/includes/cardGame.html.twig' %}
 
-    <a href="{{ path('app_runs_runs_index') }}">back to list</a>
+    <div class="container mt-4">
+        <h1></h1>
 
-    <a href="{{ path('app_runs_runs_edit', {'id': run.id}) }}">edit</a>
+        {% set primaryComparison = run.refCategories.primaryComparison %}
+        {% set secondaryComparison = run.refCategories.secondaryComparison %}
 
-    {{ include('runs/runs/_delete_form.html.twig') }}
+        <p><strong>{{ run.refCategories.name }}</strong> in
+            <strong>{{ run.primaryComparisonData(primaryComparison).data|formatTimer }}</strong> by
+            {% for user in run.refUsers %}
+                <strong>
+                    {% if loop.first %}
+                        {{ user.username }}
+                    {% else %}
+                        · {{ user.username }}
+                    {% endif %}
+                </strong>
+            {% endfor %}
+        </p>
+
+        <div>
+            <div>
+
+                {% if run.video is not null %}
+                    <div>
+                        {% if typeLink is same as 'youtube' %}
+                            {{ include('runs/includes/show/youtube.html.twig') }}
+                        {% elseif typeLink is same as 'twitch' %}
+                            {{ include('runs/includes/show/twitch.html.twig') }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            </div>
+
+
+            <div id="detailRun" class="row mt-4">
+
+                {% if run.modNotes is not null %}
+                    <div id="modnote" class="mb-3">
+                        <div class="col-12 infoCard">
+                            <span><strong>Mod Note</strong></span>
+                            <span>{{ run.modNotes }}</span>
+                        </div>
+                    </div>
+
+                {% endif %}
+
+                {% if run.description is not null %}
+                    <div id="description" class="mb-3">
+                        <div class="col-12 infoCard">
+                            <span><strong>Description</strong></span>
+                            <span>{{ run.description }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div id="primaryInfo"
+                     class=" col-12 {% if run.refCategories.configLeaderboard is not empty %} col-md-3 {% else %} col-md-4 {% endif %}">
+                    <div class="infoCard">
+                        <span><strong>Category</strong></span>
+                        <span>{{ run.refCategories.name }}</span>
+                    </div>
+
+                    {% for subCategorie in run.refCategories.subCategories %}
+                        <div class="infoCard">
+                            <span><strong>{{ subCategorie.config['label'] }}</strong></span>
+                            <span>{{ run.getDataFromField(subCategorie).data }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div id="times"
+                     class="col-12 {% if run.refCategories.configLeaderboard is not empty %} col-md-3 {% else %} col-md-4 {% endif %}">
+                    <div class="infoCard">
+                        <span><strong>{{ primaryComparison.config['label'] }}</strong></span>
+                        <p>{{ run.primaryComparisonData(primaryComparison).data|formatTimer }}</p>
+                    </div>
+                    {% if secondaryComparison is not null %}
+                        <div class="infoCard">
+                            <span><strong>{{ secondaryComparison.config['label'] }}</strong></span>
+                            {% if run.secondaryComparisonData(secondaryComparison) is null %}
+                                <span>---</span>
+                            {% else %}
+                                <span>{{ run.secondaryComparisonData(secondaryComparison).data|formatTimer }}</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if run.refCategories.configLeaderboard is not empty %}
+                    <div id="secondaryInfo" class=" col-12 col-md-3">
+                        {% for field in run.refCategories.configLeaderboard %}
+                            <div class="infoCard">
+                                <span><strong>{{ field.config['label'] }}</strong></span>
+                                <span>{{ run.dataFromField(field).data }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+
+                <div id="player"
+                     class="col-12 {% if run.refCategories.configLeaderboard is not empty %} col-md-3 {% else %} col-md-4 {% endif %}">
+                    <div class="infoCard">
+                        <span><strong>{% if run.refUsers|length > 1 %}Players{% else %}Player{% endif %}</strong></span>
+                        {% for user in run.refUsers %}
+                            {% if loop.first %}
+                                {{ user.username }}
+                            {% else %}
+                                · {{ user.username }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div id="date" class="infoCard">
+                        <span><strong>Date done</strong></span>
+                        <span>{{ run.dateMade|date('Y-m-d') }}</span>
+                    </div>
+                    {% if run.refStatus.id != 1 %}
+                        <div class="infoCard">
+                            <span><strong>Verified by {{ run.verifiedBy.username }}</strong></span>
+                            <span>{{ run.dateCheck|date('Y-m-d') }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+    </div>
 {% endblock %}

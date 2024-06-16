@@ -3,19 +3,24 @@ import toastr from "toastr";
 
 
 export default class extends Controller {
+    static values = {
+        uuid: String
+    };
+
     connect() {
 
-        /*let test1 = new FormData(this)*/
+        if (this.uuidValue === "") {
+            this.uuidValue = null;
+        }
         let form = document.querySelector("#formCategories");
-        //TODO DONC SUPPRIMER LA VERIF DANS app_categories_new
 
-        form.addEventListener("submit", async function (e) {
+        form.addEventListener("submit", async (e) => {
             e.preventDefault();
 
             let formData = new FormData(form);
 
             try {
-                let response = await fetch("/categories/call/submit", {
+                let response = await fetch("/categories/call/submit/" + this.uuidValue, {
                     method: "POST",
                     body: formData
                 });
@@ -24,6 +29,11 @@ export default class extends Controller {
                 switch (response.status) {
                     case 200 :
                         toastr.success(data.message, "Category created");
+                        if (data.redirect !== undefined) {
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 1500);
+                        }
                         break;
                     default:
                         toastr.error(data.message, "Error");

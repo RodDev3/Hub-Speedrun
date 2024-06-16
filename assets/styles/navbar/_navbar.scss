@@ -1,0 +1,39 @@
+@import "../vars.scss";
+
+nav.navbar {
+    position: sticky;
+    z-index: 10;
+    top: 0;
+    background-color: $color3 !important;
+    color: white;
+    --bs-navbar-brand-color: white;
+    --bs-emphasis-color-rgb: white;
+
+    .navbar-toggler{
+        background-color: white;
+    }
+
+    .navbar-collapse {
+        width: 550px;
+        justify-content: end;
+        flex-grow: 0;
+        #formSearch{
+            width: 100%;
+        }
+        ul.navbar-nav {
+            li.nav-item.dropdown {
+                ul.dropdown-menu {
+                    background-color: $color3;
+
+                    .dropdown-item {
+                        color: white;
+
+                        &:hover {
+                            color: $color3;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

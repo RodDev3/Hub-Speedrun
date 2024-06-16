@@ -45,6 +45,9 @@ class Categories
     #[ORM\Column(type: 'uuid')]
     private ?Uuid $uuid = null;
 
+    #[ORM\Column]
+    private ?bool $videoMandatory = null;
+
     public function __construct()
     {
         /*$this->refCategories = new ArrayCollection();*/
@@ -233,6 +236,9 @@ class Categories
         return null;
     }
 
+    /**
+     * @return Fields[]
+     */
     public function getSubCategories(): array
     {
         $subCategories = [];
@@ -244,6 +250,10 @@ class Categories
         return $subCategories;
     }
 
+    /**
+     * Renvoie les informations secondaire (Liste qui n'est pas une subcatégorie) de la catégorie
+     * @return Fields[]
+     */
     public function getConfigLeaderboard(): array
     {
         //Possible de criteria sur order
@@ -255,5 +265,17 @@ class Categories
             }
         }
         return $subCategories;
+    }
+
+    public function isVideoMandatory(): ?bool
+    {
+        return $this->videoMandatory;
+    }
+
+    public function setVideoMandatory(bool $videoMandatory): static
+    {
+        $this->videoMandatory = $videoMandatory;
+
+        return $this;
     }
 }
