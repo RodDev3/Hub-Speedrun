@@ -24,7 +24,6 @@ class RunsService extends AbstractController
 
     public function runsValidation(Runs $runs, Request $request): JsonResponse
     {
-        //dd($request->request->all()['fields']);
 
         foreach ($request->request->all()['fields'] as $key => $fieldData) {
             //Cas spécifique avec les users
@@ -130,14 +129,12 @@ class RunsService extends AbstractController
         $runs->setRefStatus($this->entityManager->getRepository(Status::class)->find(1));
         $runs->setDateSubmitted(now());
 
-
-
         $this->entityManager->persist($runs);
 
 
         $this->entityManager->flush();
 
-        return new JsonResponse(['message' => 'Run submitted !' , 'redirect' => $this->generateUrl('app_games_show', ['rewrite' => $runs->getRefGame()->getRewrite()])], 200);
+        return new JsonResponse(['message' => 'Run submitted !' ,'redirect' => $this->generateUrl('app_games_show', ['rewrite' => $runs->getRefGame()->getRewrite()])], 200);
     }
 
     public function checkOldAndNewRun(Runs $run)

@@ -41,7 +41,10 @@
                 {{ form_widget(form.video) }}
             </div>
         </div>
-        <button class="btn btn-validation mt-3">{{ button_label|default('Save') }}</button>
+        <div class="d-flex justify-content-between mt-3">
+            <a class="btn btn-primary" href="{{ path('app_games_show', {rewrite : game.rewrite}) }}">Back to game</a>
+            <button class="btn btn-validation">{{ button_label|default('Save') }}</button>
+        </div>
         {{ form_end(form, {render_rest: false}) }}
     </div>
 

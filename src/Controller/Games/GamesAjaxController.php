@@ -27,7 +27,8 @@ class GamesAjaxController extends AbstractController
     public function callCategories(Request $request): JsonResponse
     {
 
-        $categories = $this->entityManager->getRepository(Categories::class)->findOneBy(['uuid' => json_decode($request->getContent(), true)['categories']]);
+        $categories = $this->entityManager->getRepository(Categories::class)->findOneBy(
+            ['uuid' => json_decode($request->getContent(), true)['categories']]);
         if (!$categories instanceof Categories) {
             return new JsonResponse(['message' => 'Invalid Category'], 400);
         }

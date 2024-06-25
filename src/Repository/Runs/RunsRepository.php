@@ -4,6 +4,7 @@ namespace App\Repository\Runs;
 
 use App\Entity\Categories\Categories;
 use App\Entity\Fields\Fields;
+use App\Entity\Games\Games;
 use App\Entity\Runs\Runs;
 use App\Entity\Users\Users;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -56,6 +57,17 @@ class RunsRepository extends ServiceEntityRepository
     //        ;
     //    }
 
+    public function findAcceptedByGameOrderByDateSubmitted(Games $game){
+        return $this->createQueryBuilder('r')
+            ->join('r.refCategories', 'c')
+            ->join('c.refGames', 'g')
+            ->where('g.id = :gameId')
+            ->setParameter('gameId', $game->getId())
+            ->andWhere('r.refStatus = 1')
+            ->orderBy('r.dateSubmitted', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
     public function getAllAcceptedRuns($categories): array
     {
         return $this->createQueryBuilder('r')
@@ -80,10 +92,6 @@ class RunsRepository extends ServiceEntityRepository
 
     public function getRunsByCategoriesOrderByTimes(Categories $categories, array $filters = []): array
     {
-
-        //TODO A GARDER POUR LE DOSSIER
-        //PROBLEME ORDER BY CARCHAR EN INT
-        //
         $primaryFields = $categories->getPrimaryComparison();
 
         $secondaryFields = $categories->getSecondaryComparison();
@@ -93,10 +101,12 @@ class RunsRepository extends ServiceEntityRepository
             $secondary = true;
         }
 
-        $sql = "SELECT r.*, fdPrimary.id as primary_id, fdPrimary.ref_runs_id as fd_primary_ref_runs_id, fdPrimary.ref_fields_id as fd_primary_ref_fields_id, fdPrimary.data as fd_primary_data";
+        $sql = "SELECT r.*, fdPrimary.id as primary_id, fdPrimary.ref_runs_id as fd_primary_ref_runs_id,
+         fdPrimary.ref_fields_id as fd_primary_ref_fields_id, fdPrimary.data as fd_primary_data";
 
         if ($secondary) {
-            $sql .= " ,fdSecondary.id as secondary_id, fdSecondary.ref_runs_id as fd_secondary_ref_runs_id, fdSecondary.ref_fields_id as fd_secondary_ref_fields_id, fdSecondary.data as fd_secondary_data";
+            $sql .= " ,fdSecondary.id as secondary_id, fdSecondary.ref_runs_id as fd_secondary_ref_runs_id,
+             fdSecondary.ref_fields_id as fd_secondary_ref_fields_id, fdSecondary.data as fd_secondary_data";
         }
 
         $sql .= " FROM Runs as r JOIN field_data as fdPrimary ON r.id = fdPrimary.ref_runs_id";
@@ -121,8 +131,12 @@ class RunsRepository extends ServiceEntityRepository
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
 
         $rsm->addRootEntityFromClassMetadata('\App\Entity\Runs\Runs', 'r');
-        $rsm->addJoinedEntityFromClassMetadata('\App\Entity\FieldData\FieldData', 'fdPrimary', 'r', 'refFieldData', ['id' => 'primary_id', 'ref_runs_id' => 'fd_primary_ref_runs_id', 'ref_fields_id' => 'fd_primary_ref_fields_id', 'data' => 'fd_primary_data']);
-        $rsm->addJoinedEntityFromClassMetadata('\App\Entity\FieldData\FieldData', 'fdSecondary', 'r', 'refFieldData', ['id' => 'secondary_id', 'ref_runs_id' => 'fd_secondary_ref_runs_id', 'ref_fields_id' => 'fd_secondary_ref_fields_id', 'data' => 'fd_secondary_data']);
+        $rsm->addJoinedEntityFromClassMetadata('\App\Entity\FieldData\FieldData', 'fdPrimary', 'r',
+            'refFieldData', ['id' => 'primary_id', 'ref_runs_id' => 'fd_primary_ref_runs_id',
+                             'ref_fields_id' => 'fd_primary_ref_fields_id', 'data' => 'fd_primary_data']);
+        $rsm->addJoinedEntityFromClassMetadata('\App\Entity\FieldData\FieldData', 'fdSecondary', 'r',
+            'refFieldData', ['id' => 'secondary_id', 'ref_runs_id' => 'fd_secondary_ref_runs_id',
+                             'ref_fields_id' => 'fd_secondary_ref_fields_id', 'data' => 'fd_secondary_data']);
 
         $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
 

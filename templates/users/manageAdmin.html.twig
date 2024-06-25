@@ -17,9 +17,13 @@
             </div>
         {% endif %}
 
-        <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#manageAdmin">
-            Manage Admins
-        </button>
+        <div class="d-flex justify-content-between mt-4">
+
+            <a class="btn btn-primary" href="{{ path('app_home') }}">Back</a>
+            <button type="button" class="btn btn-validation " data-bs-toggle="modal" data-bs-target="#manageAdmin">
+                Manage Admins
+            </button>
+        </div>
 
         <div class="modal fade" id="manageAdmin" tabindex="-1" aria-labelledby="manageAdmin"
              aria-hidden="true">
@@ -37,8 +41,12 @@
                         {{ form_widget(form.username) }}
 
                         <div class="mt-3 d-flex justify-content-between">
-                            <button {{ stimulus_action('manageAdmins', 'delete')}} class="btn btn-delete align-self-end">Delete Admin</button>
-                            <button {{ stimulus_action('manageAdmins', 'add')}} class="btn btn-validation align-self-end">Add Admin</button>
+                            <button {{ stimulus_action('manageAdmins', 'delete') }}
+                                    class="btn btn-delete align-self-end">Delete Admin
+                            </button>
+                            <button {{ stimulus_action('manageAdmins', 'add') }}
+                                    class="btn btn-validation align-self-end">Add Admin
+                            </button>
                         </div>
                         {{ form_end(form, {render_rest: false } ) }}
                     </div>

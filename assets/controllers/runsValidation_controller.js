@@ -3,9 +3,7 @@ import toastr from "toastr";
 
 
 export default class extends Controller {
-    connect() {
-
-    }
+    connect() {}
 
     async submitRun(e) {
         e.preventDefault();

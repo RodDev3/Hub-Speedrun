@@ -51,7 +51,7 @@ class RunsController extends AbstractController
             }
         }
 
-        $runs = $this->entityManager->getRepository(Runs::class)->findBy(['refStatus' => 1], ['dateSubmitted' => 'ASC']);
+        $runs = $this->entityManager->getRepository(Runs::class)->findAcceptedByGameOrderByDateSubmitted($game);
 
 
         //Cas Update de subCategorie

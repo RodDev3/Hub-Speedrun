@@ -1,5 +1,6 @@
 import {Controller} from "@hotwired/stimulus";
 import toastr from "toastr";
+import {isGeneratorFunction} from "regenerator-runtime";
 
 
 export default class extends Controller {
@@ -9,7 +10,6 @@ export default class extends Controller {
         this.categories = this.element.querySelectorAll(".categories");
         this.gameRewrite = window.location.href.split("/").slice(-1);
 
-
         if (this.categories.length !== 0) {
             window.addEventListener("load", (e) => {
                     e.preventDefault();
@@ -18,6 +18,11 @@ export default class extends Controller {
             );
         }
 
+        if(this.categories.length === 0){
+            this.leaderboard.innerHTML = '<div class="alert alert-primary" role="alert">\n' +
+                '  Leaderboards in construction\n' +
+                '</div>';
+        }
         this.categories.forEach((category) => {
             category.addEventListener("click", (e) => {
                 this.applyCategories(e, category);
@@ -35,10 +40,10 @@ export default class extends Controller {
         }
         category.classList.add('active');
 
-        this.leaderboard.innerHTML = '<div id="loader" class="mt-4"> <div class="spinner-border text-white" role="status">' +
+        this.leaderboard.innerHTML = '<div id="loader" class="mt-4"> ' +
+            '<div class="spinner-border text-white" role="status">' +
             '<span class="visually-hidden">Loading...</span>' +
             "</div></div>";
-
 
         let response = await fetch("/game/call/categories", {
             method: "POST",

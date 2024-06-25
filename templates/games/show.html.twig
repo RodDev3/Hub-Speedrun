@@ -7,16 +7,20 @@
     {{ include('games/includes/cardGame.html.twig') }}
 
     <div id="leaderboardWrapper" {{ stimulus_controller('leaderboard') }} class="container">
-        <div id="categoriesWrapper" class="d-flex justify-content-between">
-            <div class="d-flex row-gap-2 column-gap-2 flex-wrap">
+        <div id="categoriesWrapper" class="row justify-content-between row-gap-2">
+            <div class="col-12 col-lg-10 d-flex row-gap-2 column-gap-2 flex-wrap">
                 {% for category in game.refCategories %}
                     <button data-categories="{{ category.uuid }}"
                             class="categories btn btn-primary">{{ category.name }} </button>
                 {% endfor %}
             </div>
-            <div >
-                <a class="btn btn-validation" style="width: max-content" href="{{ path('app_runs_submit' , {'rewrite' : game.rewrite}) }}">Submit Run</a>
-            </div>
+            {% if game.refCategories|length > 0 %}
+
+                <div class="col-12 justify-content-end d-flex col-lg-2">
+                    <a class="btn btn-validation" style="width: max-content"
+                       href="{{ path('app_runs_submit' , {'rewrite' : game.rewrite}) }}">Submit Run</a>
+                </div>
+            {% endif %}
         </div>
 
         <div id="leaderboard"></div>

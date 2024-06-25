@@ -26,7 +26,10 @@
         {% endif %}
 
 
-        <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#addUserModeration">Manage Users</button>
+        <div class="d-flex justify-content-between mt-4">
+            <a class="btn btn-primary" href="{{ path('app_games_show', {'rewrite' : game.rewrite}) }}">Return</a>
+            <button type="button" class="btn btn-validation" data-bs-toggle="modal" data-bs-target="#addUserModeration">Manage Users</button>
+        </div>
 
         <div class="modal fade" id="addUserModeration" tabindex="-1" aria-labelledby="exampleModalLabel"
              aria-hidden="true">

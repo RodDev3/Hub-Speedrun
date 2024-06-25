@@ -7,33 +7,38 @@
 
         <h1>Games List</h1>
 
-        <div class="d-flex justify-content-end mt-4 mb-3">
+        <div class="d-flex justify-content-between mt-4 mb-3">
+            <a class="btn btn-primary" href="{{ path('app_home') }}">Back</a>
             <a class="btn btn-validation" href="{{ path('app_games_new') }}">Create new</a>
         </div>
 
 
-        <table id="tableCategories" class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for game in games %}
-                    <tr class="rowLeaderboard noPointer">
-                        <td>{{ game.name }}</td>
-                        <td class="text-center">
-                            <a class="btn btn-primary" href="{{ path('app_games_show', {'rewrite': game.rewrite}) }}">Show</a>
-                            <a class="btn btn-primary" href="{{ path('app_games_edit', {'uuid': game.uuid}) }}">Edit</a>
-                        </td>
-                    </tr>
-                {% else %}
+        <div class="overflow-x-auto">
+            <table id="tableCategories" class="table" style="white-space: nowrap">
+                <thead>
                     <tr>
-                        <td colspan="2">no games found</td>
+                        <th>Name</th>
+                        <th></th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for game in games %}
+                        <tr class="rowLeaderboard noPointer">
+                            <td>{{ game.name }}</td>
+                            <td class="text-center">
+                                <a class="btn btn-primary"
+                                   href="{{ path('app_games_show', {'rewrite': game.rewrite}) }}">Show</a>
+                                <a class="btn btn-primary"
+                                   href="{{ path('app_games_edit', {'uuid': game.uuid}) }}">Edit</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="2">no games found</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

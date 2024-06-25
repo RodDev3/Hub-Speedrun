@@ -8,31 +8,37 @@
 
     <div class="container mt-4">
 
-        <table id="tableVerif" class="table" {{ stimulus_controller('linkLeaderboard') }}>
-            <thead>
-                <tr>
-                    <th>Runner</th>
-                    <th>Categories</th>
-                    <th>Times</th>
-                    <th>Submission date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for run in runs %}
-                    <tr class="rowLeaderboard"
-                        data-href="{{ path('app_runs_verification', {'rewrite' : game.rewrite, 'uuid' : run.uuid} ) }}">
-                        <td class="align-middle">
-                            {% for user in run.getRefUsers %}
-                                {% if loop.first %}
-                                    {{ user.username }}
-                                {% else %}
-                                    · {{ user.username }}
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td id="categories" class="align-middle">
-                            <span>{{ run.refCategories().getName() }}</span> <br>
-                            <span class="subCategories">
+        <div class="mb-2">
+            <a class="btn btn-primary" href="{{ path('app_games_show', {'rewrite' : game.rewrite}) }}">Return</a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table id="tableVerif" class="table"
+                   style="white-space: nowrap" {{ stimulus_controller('linkLeaderboard') }}>
+                <thead>
+                    <tr>
+                        <th>Runner</th>
+                        <th>Categories</th>
+                        <th>Times</th>
+                        <th>Submission date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for run in runs %}
+                        <tr class="rowLeaderboard"
+                            data-href="{{ path('app_runs_verification', {'rewrite' : game.rewrite, 'uuid' : run.uuid} ) }}">
+                            <td class="align-middle">
+                                {% for user in run.getRefUsers %}
+                                    {% if loop.first %}
+                                        {{ user.username }}
+                                    {% else %}
+                                        · {{ user.username }}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td id="categories" class="align-middle">
+                                <span>{{ run.refCategories().getName() }}</span> <br>
+                                <span class="subCategories">
                                 {% for subCategorie in run.refCategories.subCategories %}
                                     {% if loop.first %}
                                         {% if run.getDataFromField(subCategorie) is not null %}
@@ -51,29 +57,34 @@
                                     {% endif %}
                                 {% endfor %}
                             </span>
-                        </td>
-                        <td class="align-middle">
-                            {% set primaryComparison = run.refCategories.primaryComparison %}
-                            {% set secondaryComparison = run.refCategories.secondaryComparison %}
-                            <span>{{ primaryComparison.config['label'] }} {{ run.primaryComparisonData(primaryComparison).data | formatTimer }}</span>
-                            <br>
+                            </td>
+                            <td class="align-middle">
+                                {% set primaryComparison = run.refCategories.primaryComparison %}
+                                {% set secondaryComparison = run.refCategories.secondaryComparison %}
+                                <span>{{ primaryComparison.config['label'] }} {{ run.primaryComparisonData(primaryComparison).data | formatTimer }}</span>
+                                <br>
 
-                            {% if secondaryComparison is not null %}
-                                {% if run.secondaryComparisonData(secondaryComparison) is not null %}
-                                    <span>{{ secondaryComparison.config['label'] }} {{ run.secondaryComparisonData(secondaryComparison).data | formatTimer }}</span>
-                                {% else %}
-                                    <span>---</span>
+                                {% if secondaryComparison is not null %}
+                                    {% if run.secondaryComparisonData(secondaryComparison) is not null %}
+                                        <span>{{ secondaryComparison.config['label'] }} {{ run.secondaryComparisonData(secondaryComparison).data | formatTimer }}</span>
+                                    {% else %}
+                                        <span>---</span>
+                                    {% endif %}
                                 {% endif %}
-                            {% endif %}
 
-                        </td>
-                        <td class="align-middle">
-                            <span>{{ run.dateSubmitted | date('Y-m-d') }}</span>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            </td>
+                            <td class="align-middle">
+                                <span>{{ run.dateSubmitted | date('Y-m-d') }}</span>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-start text-sm-center">No runs to be verified</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
 {% endblock %}

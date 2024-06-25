@@ -1,10 +1,10 @@
-<div id="runs">
+<div id="runs" class="overflow-x-auto">
     {% if runs|length == 0 %}
         <div class="w-100 mt-4 text-center">
             No runs submitted
         </div>
     {% else %}
-        <table id="leaderboard" {{ stimulus_controller('linkLeaderboard') }} class="w-100 mt-4">
+        <table style="white-space: nowrap" id="leaderboard" {{ stimulus_controller('linkLeaderboard') }} class="w-100 mt-4">
             <thead>
                 <tr>
                     <th class="position text-center">#</th>
@@ -96,19 +96,19 @@
                             {% endif %}
                         </div>
                     </td>
-                    <td>
+                    {% if secondaryComparison is not null %}
+                        <td>
 
-                        <div class="text-center">
-                            {% if secondaryComparison is not null %}
+                            <div class="text-center">
                                 {% if secondaryComparisonData is not null %}
                                     {{ secondaryComparisonData.data | formatTimer }}
                                 {% else %}
                                     {# TODO RETIRER CE ELSE CAR PAS POSSIBLE NORMALEMENT #}
                                     ---
                                 {% endif %}
-                            {% endif %}
-                        </div>
-                    </td>
+                            </div>
+                        </td>
+                    {% endif %}
                     {% for categoryField in configFields %}
                         <td class="text-center">
                             {% set fieldData = run.getDataFromField(categoryField) %}

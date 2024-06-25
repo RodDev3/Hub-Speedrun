@@ -36,10 +36,7 @@ class CategoriesService extends AbstractController
 
     public function categoriesValidation(Request $request, Categories $categories)
     {
-
-
         $formData = $request->request->all();
-        //dd($formData);
 
         //Vérification des données de la categories
         if ($categories->getName() === null) {
@@ -54,21 +51,18 @@ class CategoriesService extends AbstractController
             return new JsonResponse(['message' => 'Please fill the number of players'], 400);
         }
 
-        //Normalement cast en int ou null mais à garder au cas où
         if (!is_int($categories->getPlayers())) {
             return new JsonResponse(['message' => 'Incorrect number of players'], 400);
         }
 
         $create = false;
-        if ($categories->getUuid() === null){
+        if ($categories->getUuid() === null) {
             $create = true;
             $categories->setUuid(Uuid::v4());
         }
 
-
         //Persist/flush la caté
         $this->entityManager->persist($categories);
-
 
         //Vérification s'il y a bien des champs ajoutés
         if (isset ($formData['categories']['fields'])) {
@@ -76,28 +70,24 @@ class CategoriesService extends AbstractController
             $hasPrimary = false;
             $hasSecondary = false;
 
-
-
             //Vérification des données sur chaque nouveau champ
             foreach ($formData['categories']['fields'] as $key => $fieldData) {
-
 
                 $explodedType = explode('.', $key);
                 $fieldType = $explodedType[0];
 
-                //dd($formData['categories']['fields']);
-                if ($create){
+                if ($create) {
                     //Cas création de catégorie
                     $field = new Fields();
-                }else{
+                } else {
 
-                    if (!UuidV4::isValid($explodedType[1])){
+                    if (!UuidV4::isValid($explodedType[1])) {
                         //Cas Update : Ajout de field
                         $field = new Fields();
-                    }else{
+                    } else {
                         $field = $this->entityManager->getRepository(Fields::class)->findOneBy(['uuid' => $explodedType[1]]);
                     }
-                    if (!$field instanceof Fields){
+                    if (!$field instanceof Fields) {
                         return new JsonResponse(['message' => 'An error occurred while adding field'], 400);
                     }
                     //Permet la suppression d'options désactivée ici
@@ -106,18 +96,15 @@ class CategoriesService extends AbstractController
                     }*/
                 }
 
-
                 $field->setRefCategories($categories);
 
                 switch ($fieldType) {
-
                     case 'time-goal':
 
                         $isPrimary = false;
                         $isSecondary = false;
                         //Boucle sur chaque propriété de nouveau champs
                         foreach ($fieldData as $keys => $data) {
-
 
                             switch ($keys) {
                                 case 'primary':
@@ -156,7 +143,7 @@ class CategoriesService extends AbstractController
                         if ($isPrimary && $isSecondary) {
                             return new JsonResponse(['message' => 'Please choose between primary and secondary'], 400);
                         }
-                        if ($isPrimary === false && $isSecondary === false ){
+                        if ($isPrimary === false && $isSecondary === false) {
                             return new JsonResponse(['message' => 'Please choose between primary and secondary'], 400);
                         }
 
@@ -166,9 +153,7 @@ class CategoriesService extends AbstractController
                             return new JsonResponse(['message' => 'Invalid field type'], 400);
                         }
                         $field->setRefFieldTypes($type);
-
                         $field->setRankOrder(1);
-
                         $this->entityManager->persist($field);
                         break;
 
@@ -189,12 +174,12 @@ class CategoriesService extends AbstractController
                                         return new JsonResponse(['message' => "Please fill all options in the list"], 400);
                                     }
 
-                                    if (!$create){
+                                    if (!$create) {
                                         //Cas update modification valeur de l'option
-                                        if (!isset($field->getConfig()["options"]) ){
+                                        if (!isset($field->getConfig()["options"])) {
                                             dd($field);
                                         }
-                                        if ($field->getConfig()["options"][$pointer] !== $data){
+                                        if ($field->getConfig()["options"][$pointer] !== $data) {
 
                                             //Récupération de toutes les ayant la data modifiée
                                             $runs = $this->entityManager->getRepository(Runs::class)->findByCategorieAndFieldAndData($categories, $field, $field->getConfig()["options"][$pointer]);
@@ -248,11 +233,13 @@ class CategoriesService extends AbstractController
                 return new JsonResponse(['message' => 'Please add/select a default timing method'], 400);
             }
             $this->entityManager->flush();
-        }else{
+        } else {
             return new JsonResponse(['message' => 'Please add some field'], 400);
         }
 
-        return new JsonResponse(['message' => $categories->getName() . ($create ? ' created' : ' updated') , 'redirect' => $this->generateUrl('app_categories_index',['rewrite' => $categories->getRefGames()->getRewrite()])]);
+        return new JsonResponse(['message' => $categories->getName() . ($create ? ' created' : ' updated'),
+                                 'redirect' => $this->generateUrl('app_categories_index',
+                                     ['rewrite' => $categories->getRefGames()->getRewrite()])]);
 
     }
 
@@ -266,10 +253,9 @@ class CategoriesService extends AbstractController
             ]);
         }
 
-        //[times => [ tempaltes à la suite ] ]
+
         foreach ($category->getRefFields() as $key => $field) {
 
-            //TODO VOIR POUR LE TRI
             switch ($field->getRefFieldTypes()->getBackName()) {
                 case 'time-goal':
 
@@ -287,16 +273,7 @@ class CategoriesService extends AbstractController
                     break;
             }
 
-            //$this->renderView() RENVOIE DU HTML
-            //TODO RENDER TWIG POUR JUSTE AVOIR LE CHAMPS EN HTML
-            /*$config = $field->getConfig();
-            $config['type'] = $field->getRefFieldTypes()->getBackName();
-            $config['id'] = $field->getId();
-            $fields[] = $config;*/
         }
-
-        //Ajout du nombre de champs joueurs à charger
-        /*$fields[] = ['type' => 'players' , 'number' => $category->getPlayers()];*/
 
         return new JsonResponse($fields);
     }
@@ -325,13 +302,12 @@ class CategoriesService extends AbstractController
         //sort avec boucle options1 options2
         $subCategories = $categories->getSubCategories();
 
-
         $runs = array_filter($runs, function ($run) use ($options, $subCategories) {
 
             //Tous les champs doivent matcher pour être dans le tableau filter
             foreach ($subCategories as $subCategory) {
                 //Cas de modif de catégorie
-                if ($run->getDataFromField($subCategory) == null){
+                if ($run->getDataFromField($subCategory) == null) {
                     return false;
                 }
                 if ($run->getDataFromField($subCategory)->getData() != $options[$subCategory->getConfig()['label']]) {
@@ -371,8 +347,6 @@ class CategoriesService extends AbstractController
 
     public function sortRunsByComparisons(array $runs): array
     {
-        //TODO FAIRE NUMBER ?
-
         if (!empty($runs)) {
 
             $categories = reset($runs)->getRefCategories();
@@ -396,9 +370,9 @@ class CategoriesService extends AbstractController
 
                     if ($secondaryA === null && $secondaryB === null) {
                         return 0;
-                    }elseif($secondaryA === null){
+                    } elseif ($secondaryA === null) {
                         return 1;
-                    }elseif($secondaryB === null){
+                    } elseif ($secondaryB === null) {
                         return -1;
                     }
 

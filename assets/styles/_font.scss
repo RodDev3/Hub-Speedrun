@@ -6,20 +6,29 @@
 }
 
 .h1Home{
+
     margin-top: 50px;
     span{
         font-family: 'Orbitron', sans-serif;
+        font-size: 5.5rem;
     }
-    span:first-child{
+    /*span:first-child{
         font-size: 85px;
     }
     span:nth-child(2){
         font-size: 80px;
-    }
+    }*/
 }
 
 //Search Result
 .searchGame{
     .searchName{
+    }
+}
+@media (max-width: 575px) {
+    .h1Home{
+        span{
+            font-size: 3.5rem;
+        }
     }
 }

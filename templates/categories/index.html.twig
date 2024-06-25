@@ -7,34 +7,45 @@
     {{ include('games/includes/cardGame.html.twig') }}
 
     <div class="container mt-4 ">
-        {# Style in _verification.scss #}
-        <div class="d-flex justify-content-end mb-3">
-            <a class="btn btn-validation" href="{{ path('app_categories_new', {'rewrite' : game.rewrite}) }}">Create new</a>
-        </div>
 
-        <table id="tableCategories" class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for category in categories %}
-                    <tr class="rowLeaderboard noPointer">
-                        <td>{{ category.name }}</td>
-                        <td class="text-center">
-                            <a class="btn btn-primary" href="{{ path('app_categories_edit', {'uuid': category.uuid, 'rewrite' : game.rewrite}) }}">Edit</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="2">no categories found</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% if categories|length > 0 %}
+            {# Style in _verification.scss #}
+            <div class="d-flex justify-content-between mb-3">
+                <a class="btn btn-primary" href="{{ path('app_games_show', {'rewrite' : game.rewrite}) }}">Return</a>
+                <a class="btn btn-validation" href="{{ path('app_categories_new', {'rewrite' : game.rewrite}) }}">Create
+                    new</a>
+            </div>
 
+            <div class="overflow-x-auto">
+                <table id="tableCategories" class="table" style="white-space: nowrap">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                            <tr class="rowLeaderboard noPointer">
+                                <td>{{ category.name }}</td>
+                                <td class="text-center">
+                                    <a class="btn btn-primary"
+                                       href="{{ path('app_categories_edit', {'uuid': category.uuid, 'rewrite' : game.rewrite}) }}">Edit</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% else %}
+
+            {# Style in _verification.scss #}
+            <div class="d-flex justify-content-center mb-3">
+                <a class="btn btn-validation" href="{{ path('app_categories_new', {'rewrite' : game.rewrite}) }}">Start by creating a category</a>
+            </div>
+
+        {% endif %}
 
     </div>
 

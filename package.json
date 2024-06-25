@@ -26,6 +26,7 @@
     "dependencies": {
         "@popperjs/core": "^2.11.8",
         "bootstrap": "^5.3.3",
+        "tarteaucitronjs": "^1.19.0",
         "toastr": "^2.1.4"
     }
 }

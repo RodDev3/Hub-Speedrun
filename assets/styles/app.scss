@@ -10,6 +10,7 @@
 @import "Runs/_general.scss";
 @import "forms/_general.scss";
 @import "forms/_category.scss";
+@import "forms/_runs.scss";
 @import "breadcrumb/_breadcrumb.scss";
 @import "footer/_footer.scss";
 @import "vars.scss";
@@ -21,6 +22,7 @@ body {
     position: relative;
     min-height: 100vh;
     padding-bottom: 80px;
+    overflow-x: hidden;
 }
 
 .btn-primary{

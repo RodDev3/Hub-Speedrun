@@ -207,7 +207,6 @@ class Runs
     public function getDataFromField(Fields $fields): FieldData|null
     {
 
-        //$criteria = Criteria::create()->andWhere(Criteria::expr()->eq("refFields.id", $fields->getId()));
         $criteria = Criteria::create()->andWhere(Criteria::expr()->eq("refFields", $fields));
 
         if ($this->getRefFieldData()->matching($criteria) !== null) {
